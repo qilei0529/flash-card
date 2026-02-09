@@ -27,12 +27,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Return audio buffer as base64 or binary
+    // Return audio buffer as binary using ArrayBuffer for compatibility with NextResponse
     const buffer = result.buffer as Buffer
-    return new NextResponse(buffer, {
+    const uint8Array = new Uint8Array(buffer)
+    return new NextResponse(uint8Array, {
       headers: {
         "Content-Type": "audio/mpeg",
-        "Content-Length": buffer.length.toString(),
+        "Content-Length": uint8Array.byteLength.toString(),
       },
     })
   } catch (error) {

@@ -40,12 +40,13 @@ export async function getSession(sessionId: string): Promise<Session | undefined
  * Get all sessions for a deck, ordered by creation date (newest first)
  */
 export async function getSessionsByDeck(deckId: string): Promise<Session[]> {
-  return db.sessions
+  const sessions = await db.sessions
     .where("deckId")
     .equals(deckId)
-    .orderBy("createdAt")
-    .reverse()
-    .toArray();
+    .sortBy("createdAt");
+
+  // Newest first
+  return sessions.reverse();
 }
 
 /**
