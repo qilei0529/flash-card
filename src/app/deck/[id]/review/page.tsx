@@ -197,7 +197,7 @@ export default function ReviewPage() {
         </div>
 
         <div
-          className={`flex-1 w-full max-w-[360px] max-h-[400px] mx-auto select-none rounded-2xl border-2 border-gray-200 bg-white p-8 pt-4 pb-4 shadow-lg dark:border-gray-700 dark:bg-gray-800 flex flex-col items-center justify-center ${
+          className={`flex-1 w-full max-w-[360px] min-h-[340px] max-h-[340px] mx-auto select-none rounded-2xl border-2 border-gray-200 bg-white p-8 pt-4 pb-4 shadow-lg dark:border-gray-700 dark:bg-gray-800 flex flex-col items-center justify-center ${
             revealStage !== "rating" ? "cursor-pointer" : ""
           }`}
           onClick={revealStage !== "rating" ? handleCardClick : undefined}
@@ -284,7 +284,7 @@ export default function ReviewPage() {
                 <div className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
                   {mode === "learning" ? "翻译" : "答案"}
                 </div>
-                <p className="whitespace-pre-wrap text-2xl text-gray-700 dark:text-gray-300">
+                <p className={`whitespace-pre-wrap text-2xl text-gray-700 dark:text-gray-300 ${mode === "test" && isWordCard(card) && card.data.pronunciation ? "mb-2" : ""}`}>
                   {mode === "learning"
                     ? card.data.translation
                     : isWordCard(card)
@@ -293,6 +293,22 @@ export default function ReviewPage() {
                         ? card.data.sentence
                         : ""}
                 </p>
+                {mode === "test" && isWordCard(card) && card.data.pronunciation && (
+                  <div className="mt-2 flex items-center justify-center gap-2">
+                    <p className="text-xl text-gray-400 dark:text-gray-500">
+                      {card.data.pronunciation}
+                    </p>
+                    {deck?.language && (
+                      <span className="-mr-8">
+                        <PlayButton
+                          text={card.data.word}
+                          lang={deck.language}
+                          tag="word"
+                        />
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -400,6 +416,32 @@ export default function ReviewPage() {
             </>
           )}
         </div>
+
+        {/* Example sentence and definition - shown during rating */}
+        {revealStage === "rating" && isWordCard(card) && (
+          <div className="mt-6 w-full max-w-[360px] mx-auto space-y-4">
+            {card.data.definition && (
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+                <div className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                  详细释义
+                </div>
+                <p className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300">
+                  {card.data.definition}
+                </p>
+              </div>
+            )}
+            {card.data.exampleSentence && (
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+                <div className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                  例句
+                </div>
+                <p className="whitespace-pre-wrap text-sm italic text-gray-700 dark:text-gray-300">
+                  {card.data.exampleSentence}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </main>
   );
