@@ -55,3 +55,16 @@ export interface ReviewRecord {
   reviewedAt: string; // ISO string
   scheduledDays: number;
 }
+
+export type SessionMode = "learning" | "test";
+
+export interface Session {
+  id: string;
+  deckId: string;
+  mode: SessionMode;
+  cardIds: string[]; // Array of card IDs selected for this session
+  createdAt: string; // ISO string
+  completedAt: string | null; // ISO string, null if session is incomplete
+  totalCards: number;
+  completedCards: number; // Number of cards reviewed in this session
+}

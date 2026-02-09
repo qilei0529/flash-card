@@ -1,10 +1,11 @@
 import Dexie, { type Table } from "dexie";
-import type { Deck, Card, ReviewRecord } from "@/types";
+import type { Deck, Card, ReviewRecord, Session } from "@/types";
 
 export class FlashCardDB extends Dexie {
   decks!: Table<Deck>;
   cards!: Table<Card>;
   reviewRecords!: Table<ReviewRecord>;
+  sessions!: Table<Session>;
 
   constructor() {
     super("FlashCardDB");
@@ -69,6 +70,16 @@ export class FlashCardDB extends Dexie {
       })
       .upgrade(async (tx) => {
         // Add language field support (no migration needed, field is optional)
+      });
+    this.version(5)
+      .stores({
+        decks: "id, createdAt, updatedAt",
+        cards: "id, deckId, due, createdAt, updatedAt",
+        reviewRecords: "id, cardId, reviewedAt, [cardId+reviewedAt]",
+        sessions: "id, deckId, createdAt, [deckId+createdAt]",
+      })
+      .upgrade(async (tx) => {
+        // Add sessions table (no migration needed for existing data)
       });
   }
 }

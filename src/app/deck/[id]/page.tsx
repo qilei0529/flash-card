@@ -11,6 +11,8 @@ import {
   Pencil,
   Trash2,
   Settings,
+  History,
+  Filter,
 } from "lucide-react";
 import { db } from "@/lib/db";
 import {
@@ -40,6 +42,7 @@ export default function DeckPage() {
   const [cardsPerSession, setCardsPerSession] = useState<number>(30);
   const [language, setLanguage] = useState<string>("");
   const [savingSettings, setSavingSettings] = useState(false);
+  const [proficiencyFilter, setProficiencyFilter] = useState<number | "all">("all");
 
   useEffect(() => {
     loadDeck();
@@ -62,6 +65,67 @@ export default function DeckPage() {
   async function loadCards() {
     const list = await getCardsByDeck(deckId);
     setCards(list);
+  }
+
+  // Filter cards by proficiency level
+  const filteredCards = cards.filter((card) => {
+    if (proficiencyFilter === "all") return true;
+    return card.state === proficiencyFilter;
+  });
+
+  // Get counts for each proficiency level
+  const proficiencyCounts = {
+    all: cards.length,
+    new: cards.filter((c) => c.state === 0).length,
+    learning: cards.filter((c) => c.state === 1).length,
+    review: cards.filter((c) => c.state === 2).length,
+    relearning: cards.filter((c) => c.state === 3).length,
+  };
+
+  function getProficiencyLabel(state: number | "all"): string {
+    if (state === "all") return "全部";
+    switch (state) {
+      case 0:
+        return "新卡片";
+      case 1:
+        return "学习中";
+      case 2:
+        return "复习中";
+      case 3:
+        return "重新学习";
+      default:
+        return "全部";
+    }
+  }
+
+  function getProficiencyBadge(card: Card): { label: string; className: string } {
+    switch (card.state) {
+      case 0:
+        return {
+          label: "新",
+          className: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200",
+        };
+      case 1:
+        return {
+          label: "学习中",
+          className: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200",
+        };
+      case 2:
+        return {
+          label: "复习中",
+          className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200",
+        };
+      case 3:
+        return {
+          label: "重新学习",
+          className: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-200",
+        };
+      default:
+        return {
+          label: "未知",
+          className: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200",
+        };
+    }
   }
 
   async function loadDueCount() {
@@ -244,6 +308,13 @@ export default function DeckPage() {
             <FileUp className="h-4 w-4" />
             Import
           </Link>
+          <Link
+            href={`/deck/${deckId}/history`}
+            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
+          >
+            <History className="h-4 w-4" />
+            学习历史
+          </Link>
         </div>
 
         {showForm && (
@@ -265,13 +336,47 @@ export default function DeckPage() {
         )}
 
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold">Cards</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Cards</h2>
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+              <select
+                value={proficiencyFilter}
+                onChange={(e) =>
+                  setProficiencyFilter(
+                    e.target.value === "all" ? "all" : parseInt(e.target.value)
+                  )
+                }
+                className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              >
+                <option value="all">
+                  全部 ({proficiencyCounts.all})
+                </option>
+                <option value="0">
+                  新卡片 ({proficiencyCounts.new})
+                </option>
+                <option value="1">
+                  学习中 ({proficiencyCounts.learning})
+                </option>
+                <option value="2">
+                  复习中 ({proficiencyCounts.review})
+                </option>
+                <option value="3">
+                  重新学习 ({proficiencyCounts.relearning})
+                </option>
+              </select>
+            </div>
+          </div>
           {cards.length === 0 ? (
             <p className="text-gray-500 dark:text-gray-400">
               No cards yet. Add one or import from CSV/Anki.
             </p>
+          ) : filteredCards.length === 0 ? (
+            <p className="text-gray-500 dark:text-gray-400">
+              没有 {getProficiencyLabel(proficiencyFilter)} 的卡片
+            </p>
           ) : (
-            cards.map((card) => (
+            filteredCards.map((card) => (
               <div
                 key={card.id}
                 className={`flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800 ${
@@ -283,6 +388,16 @@ export default function DeckPage() {
                     <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
                       {card.type === "word" ? "单词" : "句子"}
                     </span>
+                    {(() => {
+                      const badge = getProficiencyBadge(card);
+                      return (
+                        <span
+                          className={`rounded px-2 py-0.5 text-xs font-medium ${badge.className}`}
+                        >
+                          {badge.label}
+                        </span>
+                      );
+                    })()}
                   </div>
                   {isWordCard(card) ? (
                     <>

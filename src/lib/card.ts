@@ -197,3 +197,61 @@ export async function deleteCard(id: string): Promise<void> {
 export async function getCard(id: string): Promise<Card | undefined> {
   return db.cards.get(id);
 }
+
+/**
+ * Find an existing card by its content (word or sentence)
+ * Matches word cards by word field, sentence cards by sentence field
+ */
+export async function findCardByContent(
+  deckId: string,
+  type: CardType,
+  data: WordCardData | SentenceCardData
+): Promise<Card | undefined> {
+  const allCards = await db.cards
+    .where("deckId")
+    .equals(deckId)
+    .toArray();
+  
+  const existingCards = allCards.filter((c) => !c.deletedAt && c.type === type);
+  
+  if (type === "word") {
+    const wordData = data as WordCardData;
+    return existingCards.find((c) => {
+      if (isWordCard(c)) {
+        return c.data.word.trim().toLowerCase() === wordData.word.trim().toLowerCase();
+      }
+      return false;
+    });
+  } else {
+    const sentenceData = data as SentenceCardData;
+    return existingCards.find((c) => {
+      if (isSentenceCard(c)) {
+        return c.data.sentence.trim().toLowerCase() === sentenceData.sentence.trim().toLowerCase();
+      }
+      return false;
+    });
+  }
+}
+
+/**
+ * Upsert a card: update if exists (by word/sentence), create if not
+ * Returns the card and whether it was updated (true) or created (false)
+ */
+export async function upsertCard(
+  deckId: string,
+  type: CardType,
+  data: WordCardData | SentenceCardData
+): Promise<{ card: Card; updated: boolean }> {
+  const existing = await findCardByContent(deckId, type, data);
+  
+  if (existing) {
+    // Update existing card with new data
+    await updateCard(existing.id, { type, data });
+    const updated = await db.cards.get(existing.id);
+    return { card: updated!, updated: true };
+  } else {
+    // Create new card
+    const card = await createCard(deckId, type, data);
+    return { card, updated: false };
+  }
+}

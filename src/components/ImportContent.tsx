@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, FileUp, CheckCircle } from "lucide-react";
 import { getDecks } from "@/lib/deck";
-import { createCard } from "@/lib/card";
+import { upsertCard } from "@/lib/card";
 import { parseImportText } from "@/lib/import";
 import type { Deck } from "@/types";
 
@@ -17,6 +17,8 @@ export function ImportContent() {
   const [selectedDeckId, setSelectedDeckId] = useState<string>("");
   const [text, setText] = useState("");
   const [imported, setImported] = useState<number | null>(null);
+  const [updated, setUpdated] = useState<number | null>(null);
+  const [created, setCreated] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -53,10 +55,22 @@ export function ImportContent() {
       );
       return;
     }
+    
+    let updatedCount = 0;
+    let createdCount = 0;
+    
     for (const c of cards) {
-      await createCard(selectedDeckId, c.type, c.data);
+      const result = await upsertCard(selectedDeckId, c.type, c.data);
+      if (result.updated) {
+        updatedCount++;
+      } else {
+        createdCount++;
+      }
     }
+    
     setImported(cards.length);
+    setUpdated(updatedCount);
+    setCreated(createdCount);
     setText("");
   }
 
@@ -119,7 +133,16 @@ export function ImportContent() {
         {imported !== null && (
           <div className="mb-6 flex items-center gap-2 rounded-lg bg-green-50 py-3 px-4 text-green-800 dark:bg-green-900/30 dark:text-green-200">
             <CheckCircle className="h-5 w-5 shrink-0" />
-            <span>Imported {imported} cards successfully.</span>
+            <div className="flex flex-col gap-1">
+              <span>Imported {imported} cards successfully.</span>
+              {updated !== null && created !== null && (
+                <span className="text-sm">
+                  {created > 0 && `Created ${created} new cards`}
+                  {created > 0 && updated > 0 && " · "}
+                  {updated > 0 && `Updated ${updated} existing cards`}
+                </span>
+              )}
+            </div>
           </div>
         )}
 
@@ -159,6 +182,8 @@ export function ImportContent() {
                 setText(e.target.value);
                 setError(null);
                 setImported(null);
+                setUpdated(null);
+                setCreated(null);
               }}
               placeholder={`句子格式 (2列):\nsentence, translation\n\n单词格式 (3+列):\nword, translation, pronunciation, partOfSpeech, definition, exampleSentence`}
               rows={12}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { db } from "@/lib/db";
@@ -12,6 +12,11 @@ import {
   isSentenceCard,
 } from "@/lib/card";
 import { recordReview } from "@/lib/review";
+import {
+  createSession,
+  getSessionCards,
+  incrementSessionProgress,
+} from "@/lib/session";
 import { PlayButton } from "@/components/PlayButton";
 import type { Card, Deck } from "@/types";
 
@@ -21,33 +26,68 @@ type StudyMode = "learning" | "test";
 export default function ReviewPage() {
   const params = useParams();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const deckId = params.id as string;
   const mode: StudyMode = (searchParams.get("mode") as StudyMode) || "learning";
+  const sessionId = searchParams.get("sessionId");
 
   const [cards, setCards] = useState<Card[]>([]);
   const [index, setIndex] = useState(0);
   const [revealStage, setRevealStage] = useState<RevealStage>("front");
   const [loading, setLoading] = useState(true);
   const [deck, setDeck] = useState<Deck | null>(null);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(sessionId);
 
   useEffect(() => {
     loadDeckAndCards();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deckId]);
+  }, [deckId, sessionId]);
 
   async function loadDeckAndCards() {
     const d = await db.decks.get(deckId);
-    if (d) {
-      setDeck(d);
-      const limit = d.cardsPerSession || 30;
-      const due = await getDueCardsForSession(deckId, limit);
-      setCards(due);
-      setIndex(0);
-      setRevealStage("front");
+    if (!d) {
       setLoading(false);
-    } else {
-      setLoading(false);
+      return;
     }
+
+    setDeck(d);
+
+    // If sessionId exists, load cards from session
+    if (sessionId) {
+      const sessionCards = await getSessionCards(sessionId);
+      if (sessionCards.length > 0) {
+        setCards(sessionCards);
+        setCurrentSessionId(sessionId);
+        setIndex(0);
+        setRevealStage("front");
+        setLoading(false);
+        return;
+      }
+      // If session doesn't exist or has no cards, fall through to create new session
+    }
+
+    // No sessionId or session invalid - create new session
+    const limit = d.cardsPerSession || 30;
+    const due = await getDueCardsForSession(deckId, limit);
+    
+    if (due.length === 0) {
+      setCards([]);
+      setLoading(false);
+      return;
+    }
+
+    // Create new session with selected cards
+    const cardIds = due.map((card) => card.id);
+    const session = await createSession(deckId, mode, cardIds);
+    
+    // Redirect to same URL with sessionId
+    const newUrl = `/deck/${deckId}/review?mode=${mode}&sessionId=${session.id}`;
+    router.replace(newUrl);
+    setCurrentSessionId(session.id);
+    setCards(due);
+    setIndex(0);
+    setRevealStage("front");
+    setLoading(false);
   }
 
   async function loadCards() {
@@ -84,21 +124,19 @@ export default function ReviewPage() {
     if (!card) return;
 
     await recordReview(card.id, rating);
+    
+    // Update session progress
+    if (currentSessionId) {
+      await incrementSessionProgress(currentSessionId);
+    }
+    
     setRevealStage("front");
 
     if (index < cards.length - 1) {
       setIndex(index + 1);
     } else {
-      // Load new batch of cards for the session
-      if (!deck) return;
-      const limit = deck.cardsPerSession || 30;
-      const remaining = await getDueCardsForSession(deckId, limit);
-      if (remaining.length > 0) {
-        setCards(remaining);
-        setIndex(0);
-      } else {
-        setCards([]);
-      }
+      // Session completed - no more cards
+      setCards([]);
     }
   }
 
