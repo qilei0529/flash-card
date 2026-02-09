@@ -10,6 +10,7 @@ import {
   FileUp,
   Pencil,
   Trash2,
+  Settings,
 } from "lucide-react";
 import { db } from "@/lib/db";
 import {
@@ -21,6 +22,7 @@ import {
   isWordCard,
   isSentenceCard,
 } from "@/lib/card";
+import { updateDeckSettings } from "@/lib/deck";
 import type { Deck, Card, CardType, WordCardData, SentenceCardData } from "@/types";
 import { CardForm } from "@/components/CardForm";
 
@@ -34,6 +36,9 @@ export default function DeckPage() {
   const [dueCount, setDueCount] = useState(0);
   const [showForm, setShowForm] = useState(false);
   const [editingCard, setEditingCard] = useState<Card | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
+  const [cardsPerSession, setCardsPerSession] = useState<number>(30);
+  const [savingSettings, setSavingSettings] = useState(false);
 
   useEffect(() => {
     loadDeck();
@@ -49,6 +54,7 @@ export default function DeckPage() {
       return;
     }
     setDeck(d);
+    setCardsPerSession(d.cardsPerSession || 30);
   }
 
   async function loadCards() {
@@ -89,6 +95,20 @@ export default function DeckPage() {
     loadDueCount();
   }
 
+  async function handleSaveSettings() {
+    if (!deck) return;
+    setSavingSettings(true);
+    try {
+      await updateDeckSettings(deckId, {
+        cardsPerSession: cardsPerSession,
+      });
+      await loadDeck();
+      setShowSettings(false);
+    } finally {
+      setSavingSettings(false);
+    }
+  }
+
   if (!deck) return null;
 
   return (
@@ -103,11 +123,68 @@ export default function DeckPage() {
         </Link>
 
         <div className="mb-8">
-          <h1 className="text-2xl font-bold">{deck.name}</h1>
-          <p className="text-gray-500 dark:text-gray-400">
-            {cards.length} cards · {dueCount} due
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold">{deck.name}</h1>
+              <p className="text-gray-500 dark:text-gray-400">
+                {cards.length} cards · {dueCount} due
+                {dueCount > 0 &&
+                  ` · 每次复习 ${Math.min(dueCount, deck.cardsPerSession || 30)} 张`}
+              </p>
+            </div>
+            <button
+              onClick={() => setShowSettings(!showSettings)}
+              className="rounded-lg border border-gray-300 bg-white p-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
+              title="Settings"
+            >
+              <Settings className="h-5 w-5" />
+            </button>
+          </div>
         </div>
+
+        {showSettings && (
+          <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+            <h3 className="mb-4 text-lg font-semibold">设置</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="mb-2 block text-sm font-medium">
+                  每次复习卡片数量
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="1000"
+                  value={cardsPerSession}
+                  onChange={(e) =>
+                    setCardsPerSession(parseInt(e.target.value) || 30)
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                />
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  每次学习和测验时随机选择的卡片数量（1-1000）
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleSaveSettings}
+                  disabled={savingSettings}
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {savingSettings ? "保存中..." : "保存"}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowSettings(false);
+                    setCardsPerSession(deck.cardsPerSession || 30);
+                  }}
+                  className="rounded-lg border border-gray-300 px-4 py-2 dark:border-gray-600"
+                >
+                  取消
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="mb-6 flex flex-wrap gap-3">
           <Link

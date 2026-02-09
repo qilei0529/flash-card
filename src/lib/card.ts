@@ -25,6 +25,113 @@ export async function getDueCards(deckId?: string): Promise<Card[]> {
   return cards.filter((c) => !c.deletedAt && c.due <= now);
 }
 
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+/**
+ * Calculate proficiency score for a card (lower = less proficient = higher priority)
+ * Priority factors:
+ * - New cards (state 0) and Learning cards (state 1) get highest priority
+ * - Lower stability = less proficient
+ * - More lapses = less proficient
+ * - Fewer reps = less proficient
+ */
+function calculateProficiencyScore(card: Card): number {
+  // Base score from state (lower state = less proficient)
+  // New (0) = 100, Learning (1) = 80, Review (2) = 40, Relearning (3) = 60
+  let score = 0;
+  if (card.state === 0) {
+    score = 100; // New cards - highest priority
+  } else if (card.state === 1) {
+    score = 80; // Learning cards - high priority
+  } else if (card.state === 3) {
+    score = 60; // Relearning cards - medium-high priority
+  } else {
+    score = 40; // Review cards - lower priority
+  }
+
+  // Subtract stability (lower stability = higher priority)
+  // Stability typically ranges from 0 to ~365, normalize to 0-50
+  score += Math.max(0, 50 - card.stability * 0.1);
+
+  // Add lapses (more lapses = less proficient = higher priority)
+  score += Math.min(card.lapses * 10, 30);
+
+  // Subtract reps (fewer reps = less proficient = higher priority)
+  // Reps typically small, so multiply by 2
+  score += Math.max(0, 20 - card.reps * 2);
+
+  return score;
+}
+
+/**
+ * Weighted random selection prioritizing less proficient cards
+ */
+function weightedRandomSelect<T>(
+  items: T[],
+  weights: number[],
+  count: number
+): T[] {
+  if (items.length === 0) return [];
+  if (items.length <= count) return items;
+
+  const selected: T[] = [];
+  const available = items.map((item, index) => ({ item, weight: weights[index] }));
+  const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+
+  for (let i = 0; i < count; i++) {
+    if (available.length === 0) break;
+
+    // Calculate cumulative weights
+    let cumulativeWeight = 0;
+    const cumulativeWeights = available.map((a) => {
+      cumulativeWeight += a.weight;
+      return cumulativeWeight;
+    });
+
+    // Random selection based on weights
+    const random = Math.random() * cumulativeWeight;
+    let selectedIndex = 0;
+    for (let j = 0; j < cumulativeWeights.length; j++) {
+      if (random <= cumulativeWeights[j]) {
+        selectedIndex = j;
+        break;
+      }
+    }
+
+    // Add selected item and remove from available
+    selected.push(available[selectedIndex].item);
+    available.splice(selectedIndex, 1);
+  }
+
+  return selected;
+}
+
+export async function getDueCardsForSession(
+  deckId: string,
+  limit: number = 30
+): Promise<Card[]> {
+  const allDueCards = await getDueCards(deckId);
+  
+  if (allDueCards.length === 0) return [];
+  if (allDueCards.length <= limit) return shuffleArray(allDueCards);
+
+  // Calculate proficiency scores (weights) for each card
+  const weights = allDueCards.map((card) => calculateProficiencyScore(card));
+
+  // Use weighted random selection to prioritize less proficient cards
+  const selected = weightedRandomSelect(allDueCards, weights, limit);
+
+  // Shuffle the selected cards for variety
+  return shuffleArray(selected);
+}
+
 export async function createCard(
   deckId: string,
   type: CardType,

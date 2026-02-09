@@ -4,9 +4,15 @@ import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { getDueCards, isWordCard, isSentenceCard } from "@/lib/card";
+import { db } from "@/lib/db";
+import {
+  getDueCards,
+  getDueCardsForSession,
+  isWordCard,
+  isSentenceCard,
+} from "@/lib/card";
 import { recordReview } from "@/lib/review";
-import type { Card } from "@/types";
+import type { Card, Deck } from "@/types";
 
 type RevealStage = "front" | "translation" | "details" | "rating";
 type StudyMode = "learning" | "test";
@@ -21,18 +27,35 @@ export default function ReviewPage() {
   const [index, setIndex] = useState(0);
   const [revealStage, setRevealStage] = useState<RevealStage>("front");
   const [loading, setLoading] = useState(true);
+  const [deck, setDeck] = useState<Deck | null>(null);
 
   useEffect(() => {
-    loadCards();
+    loadDeckAndCards();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deckId]);
 
+  async function loadDeckAndCards() {
+    const d = await db.decks.get(deckId);
+    if (d) {
+      setDeck(d);
+      const limit = d.cardsPerSession || 30;
+      const due = await getDueCardsForSession(deckId, limit);
+      setCards(due);
+      setIndex(0);
+      setRevealStage("front");
+      setLoading(false);
+    } else {
+      setLoading(false);
+    }
+  }
+
   async function loadCards() {
-    const due = await getDueCards(deckId);
+    if (!deck) return;
+    const limit = deck.cardsPerSession || 30;
+    const due = await getDueCardsForSession(deckId, limit);
     setCards(due);
     setIndex(0);
     setRevealStage("front");
-    setLoading(false);
   }
 
   function handleCardClick() {
@@ -65,7 +88,10 @@ export default function ReviewPage() {
     if (index < cards.length - 1) {
       setIndex(index + 1);
     } else {
-      const remaining = await getDueCards(deckId);
+      // Load new batch of cards for the session
+      if (!deck) return;
+      const limit = deck.cardsPerSession || 30;
+      const remaining = await getDueCardsForSession(deckId, limit);
       if (remaining.length > 0) {
         setCards(remaining);
         setIndex(0);
@@ -137,14 +163,14 @@ export default function ReviewPage() {
         </div>
 
         <div
-          className={`flex-1 select-none rounded-2xl border-2 border-gray-200 bg-white p-8 shadow-lg dark:border-gray-700 dark:bg-gray-800 ${
+          className={`flex-1 select-none rounded-2xl border-2 border-gray-200 bg-white p-8 shadow-lg dark:border-gray-700 dark:bg-gray-800 flex flex-col items-center justify-center ${
             revealStage !== "rating" ? "cursor-pointer" : ""
           }`}
           onClick={revealStage !== "rating" ? handleCardClick : undefined}
         >
           {/* Front */}
           {revealStage === "front" && (
-            <div>
+            <div className="text-center w-full">
               <div className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
                 {mode === "learning"
                   ? isWord
@@ -152,7 +178,7 @@ export default function ReviewPage() {
                     : "句子"
                   : "翻译"}
               </div>
-              <p className="whitespace-pre-wrap text-xl leading-relaxed">
+              <p className="whitespace-pre-wrap text-3xl leading-relaxed">
                 {mode === "learning"
                   ? isWordCard(card)
                     ? card.data.word
@@ -161,9 +187,11 @@ export default function ReviewPage() {
                       : ""
                   : card.data.translation}
               </p>
-              <p className="mt-4 text-sm text-gray-400">
-                {mode === "learning" ? "点击显示翻译" : "点击显示答案"}
-              </p>
+              <div className="mt-4 h-5 flex items-center justify-center">
+                <p className="text-sm text-gray-400">
+                  {mode === "learning" ? "点击显示翻译" : "点击显示答案"}
+                </p>
+              </div>
             </div>
           )}
 
@@ -171,7 +199,7 @@ export default function ReviewPage() {
           {(revealStage === "translation" ||
             revealStage === "details" ||
             revealStage === "rating") && (
-            <div>
+            <div className="text-center w-full">
               <div className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
                 {mode === "learning"
                   ? isWord
@@ -179,7 +207,7 @@ export default function ReviewPage() {
                     : "句子"
                   : "翻译"}
               </div>
-              <p className="mb-4 whitespace-pre-wrap text-xl leading-relaxed">
+              <p className="mb-4 whitespace-pre-wrap text-3xl leading-relaxed">
                 {mode === "learning"
                   ? isWordCard(card)
                     ? card.data.word
@@ -192,7 +220,7 @@ export default function ReviewPage() {
                 <div className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
                   {mode === "learning" ? "翻译" : "答案"}
                 </div>
-                <p className="whitespace-pre-wrap text-lg text-gray-700 dark:text-gray-300">
+                <p className="whitespace-pre-wrap text-2xl text-gray-700 dark:text-gray-300">
                   {mode === "learning"
                     ? card.data.translation
                     : isWordCard(card)
@@ -208,13 +236,13 @@ export default function ReviewPage() {
           {/* Details (word only) */}
           {isWordCard(card) &&
             (revealStage === "details" || revealStage === "rating") && (
-              <div className="mt-6 space-y-3 border-t border-gray-200 pt-4 dark:border-gray-700">
+              <div className="mt-6 space-y-3 border-t border-gray-200 pt-4 dark:border-gray-700 text-center w-full">
                 {card.data.pronunciation && (
                   <div>
                     <div className="mb-1 text-xs font-medium text-gray-500 dark:text-gray-400">
                       音标
                     </div>
-                    <p className="text-lg">{card.data.pronunciation}</p>
+                    <p className="text-xl">{card.data.pronunciation}</p>
                   </div>
                 )}
                 {card.data.partOfSpeech && (
@@ -222,7 +250,7 @@ export default function ReviewPage() {
                     <div className="mb-1 text-xs font-medium text-gray-500 dark:text-gray-400">
                       词性
                     </div>
-                    <p className="text-lg">{card.data.partOfSpeech}</p>
+                    <p className="text-xl">{card.data.partOfSpeech}</p>
                   </div>
                 )}
                 {card.data.definition && (
@@ -230,7 +258,7 @@ export default function ReviewPage() {
                     <div className="mb-1 text-xs font-medium text-gray-500 dark:text-gray-400">
                       详细释义
                     </div>
-                    <p className="whitespace-pre-wrap text-lg">
+                    <p className="whitespace-pre-wrap text-xl">
                       {card.data.definition}
                     </p>
                   </div>
@@ -240,7 +268,7 @@ export default function ReviewPage() {
                     <div className="mb-1 text-xs font-medium text-gray-500 dark:text-gray-400">
                       例句
                     </div>
-                    <p className="whitespace-pre-wrap text-lg italic">
+                    <p className="whitespace-pre-wrap text-xl italic">
                       {card.data.exampleSentence}
                     </p>
                   </div>
@@ -248,46 +276,50 @@ export default function ReviewPage() {
               </div>
             )}
 
-          {/* Hint text */}
-          {revealStage === "translation" && (
-            <p className="mt-4 text-sm text-gray-400">
-              {isWord ? "点击显示详细信息" : "点击显示评分"}
-            </p>
-          )}
-          {revealStage === "details" && (
-            <p className="mt-4 text-sm text-gray-400">点击显示评分</p>
-          )}
+          {/* Hint text - fixed height container to prevent layout shift */}
+          <div className="mt-4 h-5 flex items-center justify-center">
+            {revealStage === "translation" && (
+              <p className="text-sm text-gray-400 text-center">
+                {isWord ? "点击显示详细信息" : "点击显示评分"}
+              </p>
+            )}
+            {revealStage === "details" && (
+              <p className="text-sm text-gray-400 text-center">点击显示评分</p>
+            )}
+          </div>
         </div>
 
-        {/* Rating buttons */}
-        {revealStage === "rating" && (
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <button
-              onClick={() => handleRate(1)}
-              className="rounded-lg bg-red-500 px-4 py-3 font-medium text-white hover:bg-red-600"
-            >
-              Again
-            </button>
-            <button
-              onClick={() => handleRate(2)}
-              className="rounded-lg bg-amber-500 px-4 py-3 font-medium text-white hover:bg-amber-600"
-            >
-              Hard
-            </button>
-            <button
-              onClick={() => handleRate(3)}
-              className="rounded-lg bg-green-500 px-4 py-3 font-medium text-white hover:bg-green-600"
-            >
-              Good
-            </button>
-            <button
-              onClick={() => handleRate(4)}
-              className="rounded-lg bg-emerald-600 px-4 py-3 font-medium text-white hover:bg-emerald-700"
-            >
-              Easy
-            </button>
-          </div>
-        )}
+        {/* Rating buttons - fixed height container to prevent layout shift */}
+        <div className="mt-8 h-16 flex flex-wrap justify-center items-center gap-3">
+          {revealStage === "rating" && (
+            <>
+              <button
+                onClick={() => handleRate(1)}
+                className="rounded-lg bg-red-500 px-4 py-3 font-medium text-white hover:bg-red-600"
+              >
+                Again
+              </button>
+              <button
+                onClick={() => handleRate(2)}
+                className="rounded-lg bg-amber-500 px-4 py-3 font-medium text-white hover:bg-amber-600"
+              >
+                Hard
+              </button>
+              <button
+                onClick={() => handleRate(3)}
+                className="rounded-lg bg-green-500 px-4 py-3 font-medium text-white hover:bg-green-600"
+              >
+                Good
+              </button>
+              <button
+                onClick={() => handleRate(4)}
+                className="rounded-lg bg-emerald-600 px-4 py-3 font-medium text-white hover:bg-emerald-700"
+              >
+                Easy
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </main>
   );

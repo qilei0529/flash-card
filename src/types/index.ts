@@ -4,6 +4,7 @@ export interface Deck {
   createdAt: string; // ISO string
   updatedAt: string;
   deletedAt?: string | null;
+  cardsPerSession?: number; // Default: 30, number of cards to show per session
 }
 
 export type CardType = 'word' | 'sentence';

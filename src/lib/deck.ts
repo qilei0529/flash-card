@@ -17,18 +17,42 @@ export async function createDeck(name: string): Promise<Deck> {
     name,
     createdAt: now,
     updatedAt: now,
+    cardsPerSession: 30,
   };
   await db.decks.add(deck);
   return deck;
 }
 
-export async function updateDeck(id: string, name: string): Promise<void> {
+export async function updateDeck(
+  id: string,
+  name: string,
+  cardsPerSession?: number
+): Promise<void> {
   const deck = await db.decks.get(id);
   if (!deck) return;
-  await db.decks.update(id, {
+  const updateData: Partial<Deck> = {
     name,
     updatedAt: new Date().toISOString(),
-  });
+  };
+  if (cardsPerSession !== undefined) {
+    updateData.cardsPerSession = cardsPerSession;
+  }
+  await db.decks.update(id, updateData);
+}
+
+export async function updateDeckSettings(
+  id: string,
+  settings: { cardsPerSession?: number }
+): Promise<void> {
+  const deck = await db.decks.get(id);
+  if (!deck) return;
+  const updateData: Partial<Deck> = {
+    updatedAt: new Date().toISOString(),
+  };
+  if (settings.cardsPerSession !== undefined) {
+    updateData.cardsPerSession = settings.cardsPerSession;
+  }
+  await db.decks.update(id, updateData);
 }
 
 export async function deleteDeck(id: string): Promise<void> {

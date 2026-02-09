@@ -42,6 +42,25 @@ export class FlashCardDB extends Dexie {
           })
         );
       });
+    this.version(3)
+      .stores({
+        decks: "id, createdAt, updatedAt",
+        cards: "id, deckId, due, createdAt, updatedAt",
+        reviewRecords: "id, cardId, reviewedAt, [cardId+reviewedAt]",
+      })
+      .upgrade(async (tx) => {
+        // Set default cardsPerSession for existing decks
+        const decks = await tx.table<Deck>("decks").toArray();
+        await Promise.all(
+          decks.map(async (deck) => {
+            if (!deck.cardsPerSession) {
+              await tx.table<Deck>("decks").update(deck.id, {
+                cardsPerSession: 30,
+              });
+            }
+          })
+        );
+      });
   }
 }
 
