@@ -12,6 +12,7 @@ import {
   isSentenceCard,
 } from "@/lib/card";
 import { recordReview } from "@/lib/review";
+import { PlayButton } from "@/components/PlayButton";
 import type { Card, Deck } from "@/types";
 
 type RevealStage = "front" | "translation" | "details" | "rating";
@@ -242,7 +243,16 @@ export default function ReviewPage() {
                     <div className="mb-1 text-xs font-medium text-gray-500 dark:text-gray-400">
                       音标
                     </div>
-                    <p className="text-xl">{card.data.pronunciation}</p>
+                    <div className="flex items-center justify-center gap-2 -mr-5">
+                      <p className="text-xl">{card.data.pronunciation}</p>
+                      {deck?.language && isWordCard(card) && (
+                        <PlayButton
+                          text={card.data.word}
+                          lang={deck.language}
+                          tag="word"
+                        />
+                      )}
+                    </div>
                   </div>
                 )}
                 {card.data.partOfSpeech && (

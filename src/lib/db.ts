@@ -61,6 +61,15 @@ export class FlashCardDB extends Dexie {
           })
         );
       });
+    this.version(4)
+      .stores({
+        decks: "id, createdAt, updatedAt",
+        cards: "id, deckId, due, createdAt, updatedAt",
+        reviewRecords: "id, cardId, reviewedAt, [cardId+reviewedAt]",
+      })
+      .upgrade(async (tx) => {
+        // Add language field support (no migration needed, field is optional)
+      });
   }
 }
 

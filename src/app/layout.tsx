@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, Noto_Sans_SC } from "next/font/google";
+import { Roboto, Noto_Sans_SC } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+const roboto = Roboto({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-roboto",
+  weight: ["400", "500", "700"],
   display: "swap",
 });
 
@@ -28,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${notoSansSC.variable} font-sans antialiased`}
+        className={`${roboto.variable} ${notoSansSC.variable} font-sans antialiased`}
       >
         {children}
       </body>

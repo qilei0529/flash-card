@@ -10,7 +10,7 @@ export async function getDecks(): Promise<Deck[]> {
   return decks.filter((d) => !d.deletedAt);
 }
 
-export async function createDeck(name: string): Promise<Deck> {
+export async function createDeck(name: string, language?: string): Promise<Deck> {
   const now = new Date().toISOString();
   const deck: Deck = {
     id: generateId(),
@@ -18,6 +18,7 @@ export async function createDeck(name: string): Promise<Deck> {
     createdAt: now,
     updatedAt: now,
     cardsPerSession: 30,
+    language,
   };
   await db.decks.add(deck);
   return deck;
@@ -26,7 +27,8 @@ export async function createDeck(name: string): Promise<Deck> {
 export async function updateDeck(
   id: string,
   name: string,
-  cardsPerSession?: number
+  cardsPerSession?: number,
+  language?: string
 ): Promise<void> {
   const deck = await db.decks.get(id);
   if (!deck) return;
@@ -37,12 +39,15 @@ export async function updateDeck(
   if (cardsPerSession !== undefined) {
     updateData.cardsPerSession = cardsPerSession;
   }
+  if (language !== undefined) {
+    updateData.language = language;
+  }
   await db.decks.update(id, updateData);
 }
 
 export async function updateDeckSettings(
   id: string,
-  settings: { cardsPerSession?: number }
+  settings: { cardsPerSession?: number; language?: string }
 ): Promise<void> {
   const deck = await db.decks.get(id);
   if (!deck) return;
@@ -51,6 +56,9 @@ export async function updateDeckSettings(
   };
   if (settings.cardsPerSession !== undefined) {
     updateData.cardsPerSession = settings.cardsPerSession;
+  }
+  if (settings.language !== undefined) {
+    updateData.language = settings.language;
   }
   await db.decks.update(id, updateData);
 }

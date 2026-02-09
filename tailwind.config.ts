@@ -14,7 +14,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: [
-          "var(--font-inter)",
+          "var(--font-roboto)",
           "var(--font-noto-sans-sc)",
           "system-ui",
           "sans-serif",

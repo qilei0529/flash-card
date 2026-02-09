@@ -38,6 +38,7 @@ export default function DeckPage() {
   const [editingCard, setEditingCard] = useState<Card | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [cardsPerSession, setCardsPerSession] = useState<number>(30);
+  const [language, setLanguage] = useState<string>("");
   const [savingSettings, setSavingSettings] = useState(false);
 
   useEffect(() => {
@@ -55,6 +56,7 @@ export default function DeckPage() {
     }
     setDeck(d);
     setCardsPerSession(d.cardsPerSession || 30);
+    setLanguage(d.language || "");
   }
 
   async function loadCards() {
@@ -101,6 +103,7 @@ export default function DeckPage() {
     try {
       await updateDeckSettings(deckId, {
         cardsPerSession: cardsPerSession,
+        language: language || undefined,
       });
       await loadDeck();
       setShowSettings(false);
@@ -164,6 +167,23 @@ export default function DeckPage() {
                   每次学习和测验时随机选择的卡片数量（1-1000）
                 </p>
               </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium">
+                  语言（用于语音播放）
+                </label>
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                >
+                  <option value="">未设置</option>
+                  <option value="French">French</option>
+                  <option value="English">English</option>
+                </select>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  设置语言后，单词卡片会显示播放按钮用于播放发音
+                </p>
+              </div>
               <div className="flex gap-3">
                 <button
                   onClick={handleSaveSettings}
@@ -176,6 +196,7 @@ export default function DeckPage() {
                   onClick={() => {
                     setShowSettings(false);
                     setCardsPerSession(deck.cardsPerSession || 30);
+                    setLanguage(deck.language || "");
                   }}
                   className="rounded-lg border border-gray-300 px-4 py-2 dark:border-gray-600"
                 >

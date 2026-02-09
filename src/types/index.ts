@@ -5,6 +5,7 @@ export interface Deck {
   updatedAt: string;
   deletedAt?: string | null;
   cardsPerSession?: number; // Default: 30, number of cards to show per session
+  language?: string; // Language for TTS (e.g., "French", "English", "German")
 }
 
 export type CardType = 'word' | 'sentence';
