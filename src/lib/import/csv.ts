@@ -112,3 +112,21 @@ function parseCSVLine(line: string, sep: string): string[] {
   result.push(current);
   return result;
 }
+
+/**
+ * Parse words-only text. Split by comma, newline, or tab; trim; dedupe by lower case.
+ * Use when import format is "words only" (e.g. apple, banana, orange).
+ */
+export function parseWordsOnly(text: string): string[] {
+  const tokens = text
+    .split(/[\s,\t\n\r]+/)
+    .map((s) => s.trim().replace(/^["']|["']$/g, ""))
+    .filter((s) => s.length > 0);
+  const seen = new Set<string>();
+  return tokens.filter((t) => {
+    const key = t.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}

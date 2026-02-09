@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, FileUp, CheckCircle } from "lucide-react";
+import { ArrowLeft, FileUp, CheckCircle, Loader2 } from "lucide-react";
 import { getDecks } from "@/lib/deck";
-import { upsertCard } from "@/lib/card";
-import { parseImportText } from "@/lib/import";
+import { upsertCard, updateCard, findCardByContent } from "@/lib/card";
+import { parseImportText, parseWordsOnly } from "@/lib/import";
 import type { Deck } from "@/types";
+
+type ImportFormat = "words-only" | "full-csv";
 
 export function ImportContent() {
   const searchParams = useSearchParams();
@@ -16,9 +18,13 @@ export function ImportContent() {
   const [decks, setDecks] = useState<Deck[]>([]);
   const [selectedDeckId, setSelectedDeckId] = useState<string>("");
   const [text, setText] = useState("");
+  const [format, setFormat] = useState<ImportFormat>("words-only");
   const [imported, setImported] = useState<number | null>(null);
   const [updated, setUpdated] = useState<number | null>(null);
   const [created, setCreated] = useState<number | null>(null);
+  const [enriched, setEnriched] = useState<number | null>(null);
+  const [enriching, setEnriching] = useState(false);
+  const [enrichProgress, setEnrichProgress] = useState({ current: 0, total: 0 });
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -48,6 +54,100 @@ export function ImportContent() {
       setError("Select a deck");
       return;
     }
+
+    if (format === "words-only") {
+      const words = parseWordsOnly(text);
+      if (words.length === 0) {
+        setError("No valid words found. Use comma, tab, or newline to separate words.");
+        return;
+      }
+
+      let updatedCount = 0;
+      let createdCount = 0;
+
+      for (const word of words) {
+        const result = await upsertCard(selectedDeckId, "word", {
+          word,
+          translation: "",
+        });
+        if (result.updated) updatedCount++;
+        else createdCount++;
+      }
+
+      setImported(words.length);
+      setUpdated(updatedCount);
+      setCreated(createdCount);
+      setText("");
+
+      setEnriching(true);
+      setEnrichProgress({ current: 0, total: words.length });
+
+      const CHUNK_SIZE = 5;
+      const MAX_CONCURRENT = 10;
+      const chunks: string[][] = [];
+      for (let i = 0; i < words.length; i += CHUNK_SIZE) {
+        chunks.push(words.slice(i, i + CHUNK_SIZE));
+      }
+
+      let enrichedCount = 0;
+      let processedCount = 0;
+      let hasError: Error | null = null;
+
+      const processChunk = async (chunk: string[], chunkIndex: number) => {
+        if (hasError) return;
+        const res = await fetch("/api/word-enrich", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ words: chunk, targetLang: "Chinese" }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          hasError = new Error(err.error || `Enrich failed: ${res.status}`);
+          return;
+        }
+        const { results } = await res.json();
+        for (const r of results || []) {
+          const card = await findCardByContent(selectedDeckId, "word", {
+            word: r.word,
+            translation: "",
+          });
+          if (card) {
+            await updateCard(card.id, {
+              data: {
+                word: r.word,
+                translation: r.translation,
+                pronunciation: r.pronunciation,
+                partOfSpeech: r.partOfSpeech,
+                definition: r.definition,
+                exampleSentence: r.exampleSentence,
+              },
+            });
+            enrichedCount++;
+          }
+        }
+        processedCount += chunk.length;
+        setEnrichProgress({ current: processedCount, total: words.length });
+      };
+
+      try {
+        let index = 0;
+        const workers = Array.from({ length: Math.min(MAX_CONCURRENT, chunks.length) }, async () => {
+          while (index < chunks.length && !hasError) {
+            const i = index++;
+            await processChunk(chunks[i], i);
+          }
+        });
+        await Promise.all(workers);
+        if (hasError) throw hasError;
+        setEnriched(enrichedCount);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Enrich failed");
+      } finally {
+        setEnriching(false);
+      }
+      return;
+    }
+
     const cards = parseImportText(text);
     if (cards.length === 0) {
       setError(
@@ -55,22 +155,20 @@ export function ImportContent() {
       );
       return;
     }
-    
+
     let updatedCount = 0;
     let createdCount = 0;
-    
+
     for (const c of cards) {
       const result = await upsertCard(selectedDeckId, c.type, c.data);
-      if (result.updated) {
-        updatedCount++;
-      } else {
-        createdCount++;
-      }
+      if (result.updated) updatedCount++;
+      else createdCount++;
     }
-    
+
     setImported(cards.length);
     setUpdated(updatedCount);
     setCreated(createdCount);
+    setEnriched(null);
     setText("");
   }
 
@@ -123,30 +221,65 @@ export function ImportContent() {
 
         <h1 className="mb-2 text-2xl font-bold">Import Cards</h1>
         <p className="mb-6 text-gray-500 dark:text-gray-400">
-          Paste CSV or Anki plain text (tab-separated). Format:
-          <br />
-          • 2 columns: sentence, translation (sentence type)
-          <br />
-          • 3+ columns: word, translation, pronunciation, partOfSpeech, definition, exampleSentence (word type)
+          {format === "words-only"
+            ? "Paste words separated by comma, tab, or newline. Cards will be enriched with translation, pronunciation, and more via AI."
+            : "Paste full CSV or Anki plain text. 2 columns = sentence type, 3+ columns = word type."}
         </p>
 
-        {imported !== null && (
+        {(imported !== null || enriching) && (
           <div className="mb-6 flex items-center gap-2 rounded-lg bg-green-50 py-3 px-4 text-green-800 dark:bg-green-900/30 dark:text-green-200">
-            <CheckCircle className="h-5 w-5 shrink-0" />
+            {enriching ? (
+              <Loader2 className="h-5 w-5 shrink-0 animate-spin" />
+            ) : (
+              <CheckCircle className="h-5 w-5 shrink-0" />
+            )}
             <div className="flex flex-col gap-1">
-              <span>Imported {imported} cards successfully.</span>
-              {updated !== null && created !== null && (
-                <span className="text-sm">
-                  {created > 0 && `Created ${created} new cards`}
-                  {created > 0 && updated > 0 && " · "}
-                  {updated > 0 && `Updated ${updated} existing cards`}
+              {enriching ? (
+                <span>
+                  Enriching {enrichProgress.current}/{enrichProgress.total} with AI…
                 </span>
+              ) : (
+                <>
+                  <span>Imported {imported} cards successfully.</span>
+                  {updated !== null && created !== null && (
+                    <span className="text-sm">
+                      {created > 0 && `Created ${created} new cards`}
+                      {created > 0 && updated > 0 && " · "}
+                      {updated > 0 && `Updated ${updated} existing cards`}
+                      {enriched !== null && enriched > 0 && ` · Enriched ${enriched} with AI`}
+                    </span>
+                  )}
+                </>
               )}
             </div>
           </div>
         )}
 
         <form onSubmit={handleImport} className="space-y-6">
+          <div>
+            <label className="mb-2 block font-medium">Import format</label>
+            <div className="flex gap-4">
+              <label className="flex cursor-pointer items-center gap-2">
+                <input
+                  type="radio"
+                  name="format"
+                  checked={format === "words-only"}
+                  onChange={() => setFormat("words-only")}
+                />
+                Words only (AI enrich)
+              </label>
+              <label className="flex cursor-pointer items-center gap-2">
+                <input
+                  type="radio"
+                  name="format"
+                  checked={format === "full-csv"}
+                  onChange={() => setFormat("full-csv")}
+                />
+                Full CSV
+              </label>
+            </div>
+          </div>
+
           <div>
             <label className="mb-2 block font-medium">Target deck</label>
             <select
@@ -184,8 +317,13 @@ export function ImportContent() {
                 setImported(null);
                 setUpdated(null);
                 setCreated(null);
+                setEnriched(null);
               }}
-              placeholder={`句子格式 (2列):\nsentence, translation\n\n单词格式 (3+列):\nword, translation, pronunciation, partOfSpeech, definition, exampleSentence`}
+              placeholder={
+                format === "words-only"
+                  ? "apple, banana, orange\n\nor:\napple\nbanana\norange"
+                  : "2 columns: sentence, translation\n3+ columns: word, translation, pronunciation, partOfSpeech, definition, exampleSentence"
+              }
               rows={12}
               className="w-full rounded-lg border border-gray-300 px-4 py-3 font-mono text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
             />
@@ -198,9 +336,10 @@ export function ImportContent() {
           <div className="flex gap-3">
             <button
               type="submit"
-              className="rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
+              disabled={enriching}
+              className="rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Import
+              {enriching ? "Importing…" : "Import"}
             </button>
             <Link
               href={selectedDeckId ? `/deck/${selectedDeckId}` : "/"}

@@ -1,6 +1,7 @@
-import { parseCSV, type ParsedCard } from "./csv";
+import { parseCSV, parseWordsOnly, type ParsedCard } from "./csv";
 
 export type { ParsedCard };
+export { parseWordsOnly };
 
 /**
  * Parse import text. Supports:
