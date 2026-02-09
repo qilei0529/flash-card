@@ -271,9 +271,31 @@ function containsEnglish(str: string): boolean {
 }
 
 /**
+ * Check if a word contains special symbols that should be considered dirty
+ * Common special symbols: () [] {} <> - _ ! @ # $ % ^ & * + = | \ / ? ~ ` " ' : ; , . 
+ * Also includes ellipsis: … (Unicode) or ... (three dots)
+ * Excludes French l' prefix (e.g., l'eau, l'ami)
+ */
+function containsSpecialSymbols(str: string): boolean {
+  // Check for ellipsis (Unicode character or three dots)
+  if (str.includes('…') || str.includes('...')) {
+    return true;
+  }
+  
+  // Exclude French l' prefix (l'word or L'word format)
+  // Remove l' prefix temporarily to check for other special symbols
+  const withoutFrenchPrefix = str.replace(/^[lL]'/, '');
+  
+  // Check for common special symbols that shouldn't be in words
+  const specialSymbolPattern = /[()[\]{}<>\-_!@#$%^&*+=|\\\/?~`"'.,:;]/;
+  return specialSymbolPattern.test(withoutFrenchPrefix);
+}
+
+/**
  * Check if a word is dirty data:
  * - Contains Chinese characters, OR
- * - Contains no English letters (only special symbols, numbers, spaces, etc.)
+ * - Contains no English letters (only special symbols, numbers, spaces, etc.), OR
+ * - Contains special symbols (like parentheses, brackets, etc.)
  */
 function isDirtyWord(word: string): boolean {
   const trimmed = word.trim();
@@ -289,13 +311,19 @@ function isDirtyWord(word: string): boolean {
     return true;
   }
   
+  // Contains special symbols (like parentheses, brackets, etc.)
+  if (containsSpecialSymbols(trimmed)) {
+    return true;
+  }
+  
   return false;
 }
 
 /**
  * Find word cards with dirty data in the word field:
  * - Contains Chinese characters, OR
- * - Contains no English letters (only special symbols, numbers, spaces, etc.)
+ * - Contains no English letters (only special symbols, numbers, spaces, etc.), OR
+ * - Contains special symbols (like parentheses, brackets, etc.)
  * Returns array of cards that should be cleaned
  */
 export async function findWordCardsWithChinese(deckId: string): Promise<Card[]> {
