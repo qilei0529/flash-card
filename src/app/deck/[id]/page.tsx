@@ -35,6 +35,7 @@ import { updateDeckSettings } from "@/lib/deck";
 import type { Deck, Card, CardType, WordCardData, SentenceCardData } from "@/types";
 import { CardForm } from "@/components/CardForm";
 import { cardsToCSV, downloadCSV } from "@/lib/export/csv";
+import { getCardIdsWithLastRating } from "@/lib/review";
 
 export default function DeckPage() {
   const params = useParams();
@@ -52,6 +53,8 @@ export default function DeckPage() {
   const [language, setLanguage] = useState<string>("");
   const [savingSettings, setSavingSettings] = useState(false);
   const [proficiencyFilter, setProficiencyFilter] = useState<number | "all">("all");
+  const [lastRatingFilter, setLastRatingFilter] = useState<"all" | "again">("all");
+  const [againCardIds, setAgainCardIds] = useState<Set<string> | null>(null);
   const [cleaning, setCleaning] = useState(false);
   const [actionsOpen, setActionsOpen] = useState(false);
 
@@ -59,8 +62,14 @@ export default function DeckPage() {
     loadDeck();
     loadCards();
     loadDueCount();
+    loadAgainCardIds();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deckId]);
+
+  async function loadAgainCardIds() {
+    const ids = await getCardIdsWithLastRating(deckId, 1, { withinDays: 7 });
+    setAgainCardIds(new Set(ids));
+  }
 
   async function loadDeck() {
     const d = await db.decks.get(deckId);
@@ -79,10 +88,14 @@ export default function DeckPage() {
     setCards(list);
   }
 
-  // Filter cards by proficiency level
+  // Filter cards by proficiency level and last rating (Again)
   const filteredCards = cards.filter((card) => {
-    if (proficiencyFilter === "all") return true;
-    return card.state === proficiencyFilter;
+    if (proficiencyFilter !== "all" && card.state !== proficiencyFilter) return false;
+    if (lastRatingFilter === "again") {
+      if (againCardIds === null) return true; // show all until loaded
+      return againCardIds.has(card.id);
+    }
+    return true;
   });
 
   // Get counts for each proficiency level
@@ -171,6 +184,21 @@ export default function DeckPage() {
     setEditingCard(null);
     loadCards();
     loadDueCount();
+  }
+
+  async function handleRemoveAgainCards() {
+    if (filteredCards.length === 0) return;
+    const n = filteredCards.length;
+    const word = n === 1 ? "这张卡片" : `这 ${n} 张卡片`;
+    if (!confirm(`确定要从牌组移除 ${word} 吗？\n\n（这些是过去一周内评为「Again」的卡片，移除后牌组将不再包含它们。）`)) return;
+    for (const card of filteredCards) {
+      await deleteCard(card.id);
+    }
+    setEditingCard(null);
+    setLastRatingFilter("all");
+    await loadCards();
+    await loadDueCount();
+    loadAgainCardIds();
   }
 
   async function handleSaveSettings() {
@@ -485,7 +513,7 @@ export default function DeckPage() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">Cards</h2>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Filter className="h-4 w-4 text-gray-500 dark:text-gray-400" />
               <select
                 value={proficiencyFilter}
@@ -494,7 +522,7 @@ export default function DeckPage() {
                     e.target.value === "all" ? "all" : parseInt(e.target.value)
                   )
                 }
-                className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white w-[120px]"
               >
                 <option value="all">
                   全部 ({proficiencyCounts.all})
@@ -512,6 +540,18 @@ export default function DeckPage() {
                   重新学习 ({proficiencyCounts.relearning})
                 </option>
               </select>
+              <select
+                value={lastRatingFilter}
+                onChange={(e) =>
+                  setLastRatingFilter(e.target.value as "all" | "again")
+                }
+                className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white w-[100px]"
+              >
+                <option value="all">评分</option>
+                <option value="again">
+                  Again({againCardIds?.size ?? "..."})
+                </option>
+              </select>
             </div>
           </div>
           {cards.length === 0 ? (
@@ -520,7 +560,9 @@ export default function DeckPage() {
             </p>
           ) : filteredCards.length === 0 ? (
             <p className="text-gray-500 dark:text-gray-400">
-              没有 {getProficiencyLabel(proficiencyFilter)} 的卡片
+              {lastRatingFilter === "again"
+                ? "没有过去一周内评为「Again」的卡片"
+                : `没有 ${getProficiencyLabel(proficiencyFilter)} 的卡片`}
             </p>
           ) : (
             filteredCards.map((card) => (
