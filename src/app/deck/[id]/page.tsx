@@ -16,6 +16,7 @@ import {
   Filter,
   Wand2,
   ClipboardList,
+  ChevronDown,
 } from "lucide-react";
 import { db } from "@/lib/db";
 import {
@@ -52,6 +53,7 @@ export default function DeckPage() {
   const [savingSettings, setSavingSettings] = useState(false);
   const [proficiencyFilter, setProficiencyFilter] = useState<number | "all">("all");
   const [cleaning, setCleaning] = useState(false);
+  const [actionsOpen, setActionsOpen] = useState(false);
 
   useEffect(() => {
     loadDeck();
@@ -352,75 +354,114 @@ export default function DeckPage() {
           </div>
         )}
 
-        <div className="mb-6 flex flex-wrap gap-3">
-          <Link
-            href={`/deck/${deckId}/review?mode=learning`}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium ${
-              dueCount > 0
-                ? "bg-blue-600 text-white hover:bg-blue-700"
-                : "cursor-not-allowed bg-gray-300 text-gray-500 dark:bg-gray-600 dark:text-gray-400"
-            }`}
-          >
-            <Play className="h-4 w-4" />
-            学习模式 {dueCount > 0 && `(${dueCount})`}
-          </Link>
-          <Link
-            href={`/deck/${deckId}/review?mode=test`}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium ${
-              dueCount > 0
-                ? "bg-purple-600 text-white hover:bg-purple-700"
-                : "cursor-not-allowed bg-gray-300 text-gray-500 dark:bg-gray-600 dark:text-gray-400"
-            }`}
-          >
-            <Play className="h-4 w-4" />
-            测验模式 {dueCount > 0 && `(${dueCount})`}
-          </Link>
-          <button
-            onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
-          >
-            <Plus className="h-4 w-4" />
-            Add card
-          </button>
-          <Link
-            href={`/import?deckId=${deckId}`}
-            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
-          >
-            <FileUp className="h-4 w-4" />
-            Import
-          </Link>
-          <button
-            onClick={handleExportCSV}
-            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
-            title="导出 CSV 文件"
-          >
-            <FileDown className="h-4 w-4" />
-            Export CSV
-          </button>
-          <Link
-            href={`/deck/${deckId}/history`}
-            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
-          >
-            <History className="h-4 w-4" />
-            学习历史
-          </Link>
-          <button
-            onClick={handleCleanWordsWithChinese}
-            disabled={cleaning}
-            className="flex items-center gap-2 rounded-lg border border-orange-300 bg-white px-4 py-2 text-orange-600 dark:border-orange-600 dark:bg-gray-800 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 disabled:opacity-50"
-            title="清理包含中文的单词卡片（脏数据）"
-          >
-            <Wand2 className="h-4 w-4" />
-            {cleaning ? "清理中..." : "清理脏数据"}
-          </button>
-          <button
-            onClick={handleExtractEmptyTranslation}
-            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
-            title="提取翻译为空的卡片（用逗号连接，方便重新导入）"
-          >
-            <ClipboardList className="h-4 w-4" />
-            提取空翻译
-          </button>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href={`/deck/${deckId}/review?mode=learning`}
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium ${
+                dueCount > 0
+                  ? "bg-blue-600 text-white hover:bg-blue-700"
+                  : "cursor-not-allowed bg-gray-300 text-gray-500 dark:bg-gray-600 dark:text-gray-400"
+              }`}
+            >
+              <Play className="h-4 w-4" />
+              学习模式 {dueCount > 0 && `(${dueCount})`}
+            </Link>
+            <Link
+              href={`/deck/${deckId}/review?mode=test`}
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium ${
+                dueCount > 0
+                  ? "bg-purple-600 text-white hover:bg-purple-700"
+                  : "cursor-not-allowed bg-gray-300 text-gray-500 dark:bg-gray-600 dark:text-gray-400"
+              }`}
+            >
+              <Play className="h-4 w-4" />
+              测验模式 {dueCount > 0 && `(${dueCount})`}
+            </Link>
+            <Link
+              href={`/deck/${deckId}/history`}
+              className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              <History className="h-4 w-4" />
+              学习历史
+            </Link>
+          </div>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setActionsOpen((o) => !o)}
+              className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
+              aria-expanded={actionsOpen}
+              aria-haspopup="true"
+            >
+              更多操作
+              <ChevronDown className={`h-4 w-4 transition-transform ${actionsOpen ? "rotate-180" : ""}`} />
+            </button>
+            {actionsOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  aria-hidden="true"
+                  onClick={() => setActionsOpen(false)}
+                />
+                <div className="absolute right-0 top-full z-20 mt-1 min-w-[180px] rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-600 dark:bg-gray-800">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActionsOpen(false);
+                      setShowForm(true);
+                    }}
+                    className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    <Plus className="h-4 w-4" />
+                    添加卡片
+                  </button>
+                  <Link
+                    href={`/import?deckId=${deckId}`}
+                    className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                    onClick={() => setActionsOpen(false)}
+                  >
+                    <FileUp className="h-4 w-4" />
+                    导入
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActionsOpen(false);
+                      handleExportCSV();
+                    }}
+                    className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    <FileDown className="h-4 w-4" />
+                    导出 CSV
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActionsOpen(false);
+                      handleCleanWordsWithChinese();
+                    }}
+                    disabled={cleaning}
+                    className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-orange-600 hover:bg-orange-50 disabled:opacity-50 dark:text-orange-400 dark:hover:bg-orange-900/20"
+                  >
+                    <Wand2 className="h-4 w-4" />
+                    {cleaning ? "清理中..." : "清理脏数据"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActionsOpen(false);
+                      handleExtractEmptyTranslation();
+                    }}
+                    className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    <ClipboardList className="h-4 w-4" />
+                    提取空翻译
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         {showForm && (
