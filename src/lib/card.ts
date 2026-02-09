@@ -275,6 +275,7 @@ function containsEnglish(str: string): boolean {
  * Common special symbols: () [] {} <> - _ ! @ # $ % ^ & * + = | \ / ? ~ ` " ' : ; , . 
  * Also includes ellipsis: … (Unicode) or ... (three dots)
  * Excludes French l' prefix (e.g., l'eau, l'ami)
+ * Excludes single hyphen between two words (e.g., word-word)
  */
 function containsSpecialSymbols(str: string): boolean {
   // Check for ellipsis (Unicode character or three dots)
@@ -286,9 +287,30 @@ function containsSpecialSymbols(str: string): boolean {
   // Remove l' prefix temporarily to check for other special symbols
   const withoutFrenchPrefix = str.replace(/^[lL]'/, '');
   
+  // Check if it's a single hyphen between two words (e.g., "word-word")
+  // This is considered normal data, not dirty
+  const hyphenCount = (withoutFrenchPrefix.match(/-/g) || []).length;
+  let stringToCheck = withoutFrenchPrefix;
+  
+  if (hyphenCount === 1) {
+    const hyphenIndex = withoutFrenchPrefix.indexOf('-');
+    // Check if hyphen is not at the start or end
+    if (hyphenIndex > 0 && hyphenIndex < withoutFrenchPrefix.length - 1) {
+      const beforeHyphen = withoutFrenchPrefix.substring(0, hyphenIndex);
+      const afterHyphen = withoutFrenchPrefix.substring(hyphenIndex + 1);
+      // Check if both sides contain English letters
+      if (containsEnglish(beforeHyphen) && containsEnglish(afterHyphen)) {
+        // This is a valid hyphenated word, exclude it from dirty data check
+        // Remove the hyphen and check for other special symbols
+        stringToCheck = withoutFrenchPrefix.replace('-', '');
+      }
+    }
+  }
+  
   // Check for common special symbols that shouldn't be in words
-  const specialSymbolPattern = /[()[\]{}<>\-_!@#$%^&*+=|\\\/?~`"'.,:;]/;
-  return specialSymbolPattern.test(withoutFrenchPrefix);
+  // Note: we exclude - from the pattern since we've already handled single hyphens
+  const specialSymbolPattern = /[()[\]{}<>_!@#$%^&*+=|\\\/?~`"'.,:;]/;
+  return specialSymbolPattern.test(stringToCheck);
 }
 
 /**

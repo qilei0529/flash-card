@@ -4,7 +4,7 @@ import { enrichWordsWithOpenAI } from "@/lib/openai-word";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { words, targetLang, model } = body;
+    const { words, targetLang, sourceLang, model } = body;
 
     if (!words || !Array.isArray(words) || words.length === 0) {
       return NextResponse.json(
@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
     const results = await enrichWordsWithOpenAI(
       normalized,
       typeof targetLang === "string" ? targetLang : "Chinese",
+      typeof sourceLang === "string" ? sourceLang : "English",
       typeof model === "string" ? model : undefined
     );
 

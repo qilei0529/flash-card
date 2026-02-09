@@ -19,6 +19,7 @@ export function ImportContent() {
   const [selectedDeckId, setSelectedDeckId] = useState<string>("");
   const [text, setText] = useState("");
   const [format, setFormat] = useState<ImportFormat>("words-only");
+  const [sourceLang, setSourceLang] = useState<string>("English");
   const [imported, setImported] = useState<number | null>(null);
   const [updated, setUpdated] = useState<number | null>(null);
   const [created, setCreated] = useState<number | null>(null);
@@ -98,7 +99,7 @@ export function ImportContent() {
         const res = await fetch("/api/word-enrich", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ words: chunk, targetLang: "Chinese" }),
+          body: JSON.stringify({ words: chunk, targetLang: "Chinese", sourceLang: sourceLang }),
         });
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
@@ -279,6 +280,20 @@ export function ImportContent() {
               </label>
             </div>
           </div>
+
+          {format === "words-only" && (
+            <div>
+              <label className="mb-2 block font-medium">Lang</label>
+              <select
+                value={sourceLang}
+                onChange={(e) => setSourceLang(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+              >
+                <option value="English">English</option>
+                <option value="French">French</option>
+              </select>
+            </div>
+          )}
 
           <div>
             <label className="mb-2 block font-medium">Target deck</label>
