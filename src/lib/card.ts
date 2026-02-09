@@ -255,3 +255,109 @@ export async function upsertCard(
     return { card, updated: false };
   }
 }
+
+/**
+ * Check if a string contains Chinese characters
+ */
+function containsChinese(str: string): boolean {
+  return /[\u4e00-\u9fa5]/.test(str);
+}
+
+/**
+ * Check if a string contains English letters (a-z, A-Z)
+ */
+function containsEnglish(str: string): boolean {
+  return /[a-zA-Z]/.test(str);
+}
+
+/**
+ * Check if a word is dirty data:
+ * - Contains Chinese characters, OR
+ * - Contains no English letters (only special symbols, numbers, spaces, etc.)
+ */
+function isDirtyWord(word: string): boolean {
+  const trimmed = word.trim();
+  if (!trimmed) return false; // Empty strings are not considered dirty
+  
+  // Contains Chinese characters
+  if (containsChinese(trimmed)) {
+    return true;
+  }
+  
+  // Contains no English letters (only special symbols, numbers, spaces, etc.)
+  if (!containsEnglish(trimmed)) {
+    return true;
+  }
+  
+  return false;
+}
+
+/**
+ * Find word cards with dirty data in the word field:
+ * - Contains Chinese characters, OR
+ * - Contains no English letters (only special symbols, numbers, spaces, etc.)
+ * Returns array of cards that should be cleaned
+ */
+export async function findWordCardsWithChinese(deckId: string): Promise<Card[]> {
+  const allCards = await db.cards
+    .where("deckId")
+    .equals(deckId)
+    .toArray();
+  
+  const activeCards = allCards.filter((c) => !c.deletedAt && isWordCard(c));
+  
+  return activeCards.filter((card) => {
+    if (isWordCard(card)) {
+      return isDirtyWord(card.data.word);
+    }
+    return false;
+  });
+}
+
+/**
+ * Batch delete word cards that contain Chinese characters in the word field
+ * Returns the number of deleted cards
+ */
+export async function cleanWordCardsWithChinese(deckId: string): Promise<number> {
+  const cardsToDelete = await findWordCardsWithChinese(deckId);
+  const now = new Date().toISOString();
+  
+  await Promise.all(
+    cardsToDelete.map((card) =>
+      db.cards.update(card.id, { deletedAt: now, updatedAt: now })
+    )
+  );
+  
+  return cardsToDelete.length;
+}
+
+/**
+ * Find cards with empty translation
+ * Returns array of words/sentences (comma-separated string ready for import)
+ */
+export async function findCardsWithEmptyTranslation(deckId: string): Promise<string> {
+  const allCards = await db.cards
+    .where("deckId")
+    .equals(deckId)
+    .toArray();
+  
+  const activeCards = allCards.filter((c) => !c.deletedAt);
+  
+  const items: string[] = [];
+  
+  for (const card of activeCards) {
+    if (isWordCard(card)) {
+      const translation = card.data.translation?.trim() || "";
+      if (!translation) {
+        items.push(card.data.word.trim());
+      }
+    } else if (isSentenceCard(card)) {
+      const translation = card.data.translation?.trim() || "";
+      if (!translation) {
+        items.push(card.data.sentence.trim());
+      }
+    }
+  }
+  
+  return items.join(", ");
+}

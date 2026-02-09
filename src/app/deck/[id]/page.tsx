@@ -8,11 +8,14 @@ import {
   Plus,
   Play,
   FileUp,
+  FileDown,
   Pencil,
   Trash2,
   Settings,
   History,
   Filter,
+  Wand2,
+  ClipboardList,
 } from "lucide-react";
 import { db } from "@/lib/db";
 import {
@@ -23,10 +26,14 @@ import {
   getDueCards,
   isWordCard,
   isSentenceCard,
+  findWordCardsWithChinese,
+  cleanWordCardsWithChinese,
+  findCardsWithEmptyTranslation,
 } from "@/lib/card";
 import { updateDeckSettings } from "@/lib/deck";
 import type { Deck, Card, CardType, WordCardData, SentenceCardData } from "@/types";
 import { CardForm } from "@/components/CardForm";
+import { cardsToCSV, downloadCSV } from "@/lib/export/csv";
 
 export default function DeckPage() {
   const params = useParams();
@@ -39,10 +46,12 @@ export default function DeckPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingCard, setEditingCard] = useState<Card | null>(null);
   const [showSettings, setShowSettings] = useState(false);
+  const [deckName, setDeckName] = useState<string>("");
   const [cardsPerSession, setCardsPerSession] = useState<number>(30);
   const [language, setLanguage] = useState<string>("");
   const [savingSettings, setSavingSettings] = useState(false);
   const [proficiencyFilter, setProficiencyFilter] = useState<number | "all">("all");
+  const [cleaning, setCleaning] = useState(false);
 
   useEffect(() => {
     loadDeck();
@@ -58,6 +67,7 @@ export default function DeckPage() {
       return;
     }
     setDeck(d);
+    setDeckName(d.name);
     setCardsPerSession(d.cardsPerSession || 30);
     setLanguage(d.language || "");
   }
@@ -163,9 +173,14 @@ export default function DeckPage() {
 
   async function handleSaveSettings() {
     if (!deck) return;
+    if (!deckName.trim()) {
+      alert("Deck name cannot be empty");
+      return;
+    }
     setSavingSettings(true);
     try {
       await updateDeckSettings(deckId, {
+        name: deckName.trim(),
         cardsPerSession: cardsPerSession,
         language: language || undefined,
       });
@@ -174,6 +189,59 @@ export default function DeckPage() {
     } finally {
       setSavingSettings(false);
     }
+  }
+
+  async function handleCleanWordsWithChinese() {
+    const dirtyCards = await findWordCardsWithChinese(deckId);
+    if (dirtyCards.length === 0) {
+      alert("没有找到包含中文的单词卡片");
+      return;
+    }
+
+    const wordList = dirtyCards
+      .slice(0, 10)
+      .map((c) => (isWordCard(c) ? c.data.word : ""))
+      .filter(Boolean)
+      .join(", ");
+    const preview = dirtyCards.length > 10 ? `${wordList}...` : wordList;
+
+    const confirmed = confirm(
+      `找到 ${dirtyCards.length} 张包含中文的单词卡片（可能是脏数据）\n\n示例：${preview}\n\n确定要删除这些卡片吗？`
+    );
+
+    if (!confirmed) return;
+
+    setCleaning(true);
+    try {
+      const deletedCount = await cleanWordCardsWithChinese(deckId);
+      alert(`已删除 ${deletedCount} 张包含中文的单词卡片`);
+      loadCards();
+      loadDueCount();
+    } catch (error) {
+      alert("清理失败：" + (error instanceof Error ? error.message : String(error)));
+    } finally {
+      setCleaning(false);
+    }
+  }
+
+  function handleExportCSV() {
+    if (cards.length === 0) {
+      alert("没有卡片可导出");
+      return;
+    }
+
+    const csvContent = cardsToCSV(cards);
+    const filename = `${deck?.name || "deck"}-${new Date().toISOString().split("T")[0]}.csv`;
+    downloadCSV(csvContent, filename);
+  }
+
+  async function handleExtractEmptyTranslation() {
+    const items = await findCardsWithEmptyTranslation(deckId);
+    if (!items || items.trim() === "") {
+      alert("没有找到翻译为空的卡片");
+      return;
+    }
+    alert(items);
   }
 
   if (!deck) return null;
@@ -213,6 +281,18 @@ export default function DeckPage() {
           <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
             <h3 className="mb-4 text-lg font-semibold">设置</h3>
             <div className="space-y-4">
+              <div>
+                <label className="mb-2 block text-sm font-medium">
+                  Deck 名称
+                </label>
+                <input
+                  type="text"
+                  value={deckName}
+                  onChange={(e) => setDeckName(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  placeholder="Enter deck name"
+                />
+              </div>
               <div>
                 <label className="mb-2 block text-sm font-medium">
                   每次复习卡片数量
@@ -259,6 +339,7 @@ export default function DeckPage() {
                 <button
                   onClick={() => {
                     setShowSettings(false);
+                    setDeckName(deck.name);
                     setCardsPerSession(deck.cardsPerSession || 30);
                     setLanguage(deck.language || "");
                   }}
@@ -308,6 +389,14 @@ export default function DeckPage() {
             <FileUp className="h-4 w-4" />
             Import
           </Link>
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
+            title="导出 CSV 文件"
+          >
+            <FileDown className="h-4 w-4" />
+            Export CSV
+          </button>
           <Link
             href={`/deck/${deckId}/history`}
             className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -315,6 +404,23 @@ export default function DeckPage() {
             <History className="h-4 w-4" />
             学习历史
           </Link>
+          <button
+            onClick={handleCleanWordsWithChinese}
+            disabled={cleaning}
+            className="flex items-center gap-2 rounded-lg border border-orange-300 bg-white px-4 py-2 text-orange-600 dark:border-orange-600 dark:bg-gray-800 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 disabled:opacity-50"
+            title="清理包含中文的单词卡片（脏数据）"
+          >
+            <Wand2 className="h-4 w-4" />
+            {cleaning ? "清理中..." : "清理脏数据"}
+          </button>
+          <button
+            onClick={handleExtractEmptyTranslation}
+            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
+            title="提取翻译为空的卡片（用逗号连接，方便重新导入）"
+          >
+            <ClipboardList className="h-4 w-4" />
+            提取空翻译
+          </button>
         </div>
 
         {showForm && (

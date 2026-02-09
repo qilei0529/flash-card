@@ -47,13 +47,16 @@ export async function updateDeck(
 
 export async function updateDeckSettings(
   id: string,
-  settings: { cardsPerSession?: number; language?: string }
+  settings: { name?: string; cardsPerSession?: number; language?: string }
 ): Promise<void> {
   const deck = await db.decks.get(id);
   if (!deck) return;
   const updateData: Partial<Deck> = {
     updatedAt: new Date().toISOString(),
   };
+  if (settings.name !== undefined) {
+    updateData.name = settings.name;
+  }
   if (settings.cardsPerSession !== undefined) {
     updateData.cardsPerSession = settings.cardsPerSession;
   }
