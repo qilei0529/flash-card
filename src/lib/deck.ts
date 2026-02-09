@@ -18,7 +18,7 @@ export async function createDeck(name: string, language?: string): Promise<Deck>
     createdAt: now,
     updatedAt: now,
     cardsPerSession: 30,
-    language,
+    language: language ?? "English",
   };
   await db.decks.add(deck);
   return deck;

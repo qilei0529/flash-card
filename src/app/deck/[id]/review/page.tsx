@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, RotateCcw, CheckCircle2 } from "lucide-react";
 import { db } from "@/lib/db";
 import {
   getDueCards,
@@ -18,6 +18,7 @@ import {
   incrementSessionProgress,
 } from "@/lib/session";
 import { PlayButton } from "@/components/PlayButton";
+import { getAudioUrl } from "@/lib/audioCache";
 import type { Card, Deck } from "@/types";
 
 type RevealStage = "front" | "translation" | "details" | "rating";
@@ -37,11 +38,82 @@ export default function ReviewPage() {
   const [loading, setLoading] = useState(true);
   const [deck, setDeck] = useState<Deck | null>(null);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(sessionId);
+  const [sessionCompleted, setSessionCompleted] = useState(false);
 
   useEffect(() => {
     loadDeckAndCards();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deckId, sessionId]);
+
+  // Keyboard shortcuts: J = reveal/score, U/I/O/P = rate, H = play sound; on done screen: B = back, Enter = again
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      const target = e.target as HTMLElement;
+      if (
+        target.closest("input") ||
+        target.closest("textarea") ||
+        target.closest("[contenteditable]")
+      ) {
+        return;
+      }
+      const key = e.key.toLowerCase();
+      if (cards.length === 0) {
+        if (key === "b") {
+          e.preventDefault();
+          router.push(`/deck/${deckId}`);
+          return;
+        }
+        if (key === "enter") {
+          e.preventDefault();
+          setSessionCompleted(false);
+          router.replace(`/deck/${deckId}/review?mode=${mode}`);
+          return;
+        }
+        return;
+      }
+      if (key === "j") {
+        e.preventDefault();
+        if (cards.length > 0 && revealStage !== "rating") {
+          handleCardClick();
+        }
+        return;
+      }
+      if (revealStage === "rating") {
+        if (key === "u") {
+          e.preventDefault();
+          handleRate(1);
+        } else if (key === "i") {
+          e.preventDefault();
+          handleRate(2);
+        } else if (key === "o") {
+          e.preventDefault();
+          handleRate(3);
+        } else if (key === "p") {
+          e.preventDefault();
+          handleRate(4);
+        }
+        return;
+      }
+      if (key === "h") {
+        e.preventDefault();
+        const card = cards[index];
+        if (!card || !deck?.language) return;
+        const text = isWordCard(card)
+          ? card.data.word
+          : isSentenceCard(card)
+            ? card.data.sentence
+            : "";
+        const tag = isWordCard(card) ? "word" : "sentence";
+        if (!text) return;
+        getAudioUrl(text, deck.language, tag).then((url) => {
+          const audio = new Audio(url);
+          audio.play().catch(() => {});
+        });
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [cards, index, revealStage, deck?.language, deckId, mode, router]);
 
   async function loadDeckAndCards() {
     const d = await db.decks.get(deckId);
@@ -104,12 +176,9 @@ export default function ReviewPage() {
     if (!card) return;
 
     if (revealStage === "front") {
-      setRevealStage("translation");
-    } else if (revealStage === "translation") {
-      // 直接显示评分（详细信息已暂时隐藏）
+      // 一次点击：直接显示翻译 + 评分按钮
       setRevealStage("rating");
-    } else if (revealStage === "details") {
-      // 单词类型：显示评分
+    } else if (revealStage === "translation" || revealStage === "details") {
       setRevealStage("rating");
     }
   }
@@ -130,28 +199,63 @@ export default function ReviewPage() {
     if (index < cards.length - 1) {
       setIndex(index + 1);
     } else {
-      // Session completed - no more cards
+      setSessionCompleted(true);
       setCards([]);
     }
   }
 
   if (loading) return <div className="p-8">Loading...</div>;
 
+  function handleStartAgain() {
+    setSessionCompleted(false);
+    router.replace(`/deck/${deckId}/review?mode=${mode}`);
+  }
+
   if (cards.length === 0) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-6">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold">No cards due</h1>
-          <p className="mt-2 text-gray-500 dark:text-gray-400">
-            Great job! You have no cards to review right now.
-          </p>
-          <Link
-            href={`/deck/${deckId}`}
-            className="mt-6 inline-flex items-center gap-2 text-blue-600 hover:underline dark:text-blue-400"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to deck
-          </Link>
+      <main className="flex min-h-screen flex-col items-center justify-center p-6 sm:p-8">
+        <div className="mx-auto w-full max-w-sm rounded-3xl border-2 border-gray-200 bg-white p-8 shadow-xl dark:border-gray-700 dark:bg-gray-800 text-center">
+          {sessionCompleted ? (
+            <>
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+                <CheckCircle2 className="h-9 w-9 text-green-600 dark:text-green-400" />
+              </div>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                完成
+              </h1>
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                恭喜完成本轮复习
+              </p>
+            </>
+          ) : (
+            <>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                暂无待复习
+              </h1>
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                当前没有需要复习的卡片
+              </p>
+            </>
+          )}
+          <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+            <Link
+              href={`/deck/${deckId}`}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              返回
+              <kbd className="ml-1 rounded bg-gray-200 px-1.5 py-0.5 font-mono text-[10px] dark:bg-gray-600">B</kbd>
+            </Link>
+            <button
+              type="button"
+              onClick={handleStartAgain}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-5 py-3 text-sm font-medium text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+            >
+              <RotateCcw className="h-4 w-4" />
+              再来
+              <kbd className="ml-1 rounded bg-white/20 px-1.5 py-0.5 font-mono text-[10px]">↵</kbd>
+            </button>
+          </div>
         </div>
       </main>
     );
@@ -197,7 +301,7 @@ export default function ReviewPage() {
         </div>
 
         <div
-          className={`flex-1 w-full max-w-[360px] min-h-[340px] max-h-[340px] mx-auto select-none rounded-2xl border-2 border-gray-200 bg-white p-8 pt-4 pb-4 shadow-lg dark:border-gray-700 dark:bg-gray-800 flex flex-col items-center justify-center ${
+          className={`flex-1 w-full max-w-[360px] min-h-[280px] max-h-[280px] mx-auto select-none rounded-2xl border-2 border-gray-200 bg-white p-8 pt-4 pb-4 shadow-lg dark:border-gray-700 dark:bg-gray-800 flex flex-col items-center justify-center ${
             revealStage !== "rating" ? "cursor-pointer" : ""
           }`}
           onClick={revealStage !== "rating" ? handleCardClick : undefined}
@@ -374,45 +478,49 @@ export default function ReviewPage() {
 
           {/* Hint text - fixed height container to prevent layout shift */}
           <div className="mt-4 h-5 flex items-center justify-center">
-            {revealStage === "translation" && (
+            {revealStage === "front" && (
               <p className="text-sm text-gray-400 text-center">
-                点击显示评分
+                点击或按 <kbd className="rounded bg-gray-200 px-1.5 py-0.5 font-mono text-xs dark:bg-gray-600">J</kbd> 显示翻译与评分 · <kbd className="rounded bg-gray-200 px-1.5 py-0.5 font-mono text-xs dark:bg-gray-600">H</kbd> 播放
               </p>
             )}
-            {revealStage === "details" && (
-              <p className="text-sm text-gray-400 text-center">点击显示评分</p>
-            )}
+            
           </div>
         </div>
 
         {/* Rating buttons - fixed height container to prevent layout shift */}
-        <div className="mt-8 h-16 flex flex-wrap justify-center items-center gap-3">
+        <div className="mt-8 flex flex-col items-center">
           {revealStage === "rating" && (
             <>
-              <button
-                onClick={() => handleRate(1)}
-                className="rounded-lg bg-red-500 px-4 py-3 font-medium text-white hover:bg-red-600"
-              >
-                Again
-              </button>
-              <button
-                onClick={() => handleRate(2)}
-                className="rounded-lg bg-amber-500 px-4 py-3 font-medium text-white hover:bg-amber-600"
-              >
-                Hard
-              </button>
-              <button
-                onClick={() => handleRate(3)}
-                className="rounded-lg bg-green-500 px-4 py-3 font-medium text-white hover:bg-green-600"
-              >
-                Good
-              </button>
-              <button
-                onClick={() => handleRate(4)}
-                className="rounded-lg bg-emerald-600 px-4 py-3 font-medium text-white hover:bg-emerald-700"
-              >
-                Easy
-              </button>
+              <div className="flex flex-wrap justify-center items-center gap-3">
+                <button
+                  onClick={() => handleRate(1)}
+                  className="flex flex-col items-center gap rounded-2xl bg-red-500 px-4 py-3 pb-1 text-sm font-medium text-white hover:bg-red-600"
+                >
+                  <span className="font-semibold">不认识</span>
+                  <kbd className="text-[12px] font-mono font-semibold">U</kbd>
+                </button>
+                <button
+                  onClick={() => handleRate(2)}
+                  className="flex flex-col items-center gap rounded-2xl bg-amber-500 px-4 py-3 pb-1 text-sm font-medium text-white hover:bg-amber-600"
+                >
+                  <span className="font-semibold">有点难</span>
+                  <kbd className="text-[12px] font-mono font-semibold">I</kbd>
+                </button>
+                <button
+                  onClick={() => handleRate(3)}
+                  className="flex flex-col items-center gap rounded-2xl bg-green-500 px-4 py-3 pb-1 text-sm font-medium text-white hover:bg-green-600"
+                >
+                  <span className="font-semibold">认识</span>
+                  <kbd className="text-[12px] font-mono font-semibold">O</kbd>
+                </button>
+                <button
+                  onClick={() => handleRate(4)}
+                  className="flex flex-col items-center gap rounded-2xl bg-emerald-600 px-4 py-3 pb-1 text-sm font-medium text-white hover:bg-emerald-700"
+                >
+                  <span className="font-semibold">熟悉</span>
+                  <kbd className="text-[12px] font-mono font-semibold opacity-80">P</kbd>
+                </button>
+              </div>
             </>
           )}
         </div>
@@ -425,7 +533,7 @@ export default function ReviewPage() {
                 <div className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
                   详细释义
                 </div>
-                <p className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300">
+                <p className="whitespace-pre-wrap text-lg text-gray-700 dark:text-gray-300">
                   {card.data.definition}
                 </p>
               </div>
@@ -435,7 +543,7 @@ export default function ReviewPage() {
                 <div className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
                   例句
                 </div>
-                <p className="whitespace-pre-wrap text-sm italic text-gray-700 dark:text-gray-300">
+                <p className="whitespace-pre-wrap text-lg  text-gray-700 dark:text-gray-300">
                   {card.data.exampleSentence}
                 </p>
               </div>

@@ -14,6 +14,7 @@ import {
   Settings,
   History,
   Filter,
+  Search,
   Wand2,
   ClipboardList,
   ChevronDown,
@@ -57,6 +58,7 @@ export default function DeckPage() {
   const [againCardIds, setAgainCardIds] = useState<Set<string> | null>(null);
   const [cleaning, setCleaning] = useState(false);
   const [actionsOpen, setActionsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     loadDeck();
@@ -88,12 +90,20 @@ export default function DeckPage() {
     setCards(list);
   }
 
-  // Filter cards by proficiency level and last rating (Again)
+  // Filter cards by proficiency level, last rating (Again), and search
+  const q = searchQuery.trim().toLowerCase();
   const filteredCards = cards.filter((card) => {
     if (proficiencyFilter !== "all" && card.state !== proficiencyFilter) return false;
     if (lastRatingFilter === "again") {
       if (againCardIds === null) return true; // show all until loaded
-      return againCardIds.has(card.id);
+      if (!againCardIds.has(card.id)) return false;
+    }
+    if (q) {
+      const word = isWordCard(card) ? (card.data.word ?? "").toLowerCase() : "";
+      const translation = (card.data.translation ?? "").toLowerCase();
+      const sentence = isSentenceCard(card) ? (card.data.sentence ?? "").toLowerCase() : "";
+      const match = word.includes(q) || translation.includes(q) || sentence.includes(q);
+      if (!match) return false;
     }
     return true;
   });
@@ -393,7 +403,7 @@ export default function DeckPage() {
               }`}
             >
               <Play className="h-4 w-4" />
-              学习模式 {dueCount > 0 && `(${dueCount})`}
+              学习 {dueCount > 0 && `(${dueCount})`}
             </Link>
             <Link
               href={`/deck/${deckId}/review?mode=test`}
@@ -404,14 +414,14 @@ export default function DeckPage() {
               }`}
             >
               <Play className="h-4 w-4" />
-              测验模式 {dueCount > 0 && `(${dueCount})`}
+              测验
             </Link>
             <Link
               href={`/deck/${deckId}/history`}
               className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               <History className="h-4 w-4" />
-              学习历史
+              历史
             </Link>
           </div>
           <div className="relative">
@@ -514,6 +524,17 @@ export default function DeckPage() {
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">Cards</h2>
             <div className="flex flex-wrap items-center gap-2">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="搜索..."
+                  className="w-36 rounded-lg border border-gray-300 bg-white py-1.5 pl-8 pr-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:w-44"
+                  aria-label="搜索卡片"
+                />
+              </div>
               <Filter className="h-4 w-4 text-gray-500 dark:text-gray-400" />
               <select
                 value={proficiencyFilter}
@@ -560,9 +581,11 @@ export default function DeckPage() {
             </p>
           ) : filteredCards.length === 0 ? (
             <p className="text-gray-500 dark:text-gray-400">
-              {lastRatingFilter === "again"
-                ? "没有过去一周内评为「Again」的卡片"
-                : `没有 ${getProficiencyLabel(proficiencyFilter)} 的卡片`}
+              {searchQuery.trim()
+                ? "没有匹配的卡片"
+                : lastRatingFilter === "again"
+                  ? "没有过去一周内评为「Again」的卡片"
+                  : `没有 ${getProficiencyLabel(proficiencyFilter)} 的卡片`}
             </p>
           ) : (
             filteredCards.map((card) => (
