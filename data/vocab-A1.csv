@@ -1,0 +1,759 @@
+word,translation,pronunciation,partOfSpeech,definition,exampleSentence
+shop,商店,/ʃɑp/,noun,a place where goods are sold,Let's go to the shop after school.
+store,商店,/stɔr/,noun,a place where goods are sold,This store has great prices.
+market,市场,/ˈmɑrkɪt/,noun,,The market is busy on weekends.
+supermarket,超市,/ˈsuːpərmɑːrkɪt/,noun,,I buy groceries at the supermarket every week.
+bakery,面包店,/ˈbeɪkəri/,noun,,The bakery smells amazing in the morning.
+pharmacy,药店,/ˈfɑːrməsi/,noun,,Can you stop at the pharmacy for me?
+drugstore,药店,/ˈdrəgˌstɔr/,noun,,I need to pick up medicine at the drugstore.
+bookstore,书店,/ˈbʊkˌstɔr/,noun,,She spends hours in the bookstore.
+shopkeeper,店主,/ˈʃɑpˌkipər/,noun,,The shopkeeper helped me find what I needed.
+butcher,肉贩,/ˈbʊʧər/,noun,,The butcher cuts fresh meat every day.
+baker,面包师,/ˈbeɪkər/,noun,,The baker makes fresh bread early in the morning.
+pineapple,菠萝,/ˈpaɪnæpl/,noun,,Pineapple is my favorite tropical fruit.
+banana,香蕉,/bəˈnænə/,noun,,I eat a banana for breakfast.
+lemon,柠檬,/ˈlɛmən/,noun,,Add some lemon to your tea.
+strawberry,草莓,/ˈstrɔːberi/,noun,,Strawberries are sweet in summer.
+orange,橙子,/ˈɔrɪnʤ/,noun,,Would you like an orange?
+peach,桃子,/piʧ/,noun,,This peach is so juicy!
+pear,梨子,/pɛr/,noun,,I prefer pears to apples.
+apple,苹果,/ˈæpəl/,noun,,An apple a day keeps the doctor away.
+grapes,葡萄,/greɪps/,noun,,These grapes are delicious.
+tomato,番茄,/təˈmɑˌtoʊ/,noun,,Tomatoes are red and juicy.
+carrot,胡萝卜,/ˈkɛrət/,noun,,Rabbits love to eat carrots.
+onion,洋葱,/ˈənjən/,noun,,Onions make me cry when I cut them.
+bell pepper,甜椒,/bɛl ˈpɛpər/,noun,,Bell peppers come in different colors.
+potato,土豆,/pəˈteɪˌtoʊ/,noun,,I like baked potatoes.
+lettuce,生菜,/ˈlɛtəs/,noun,,Lettuce is fresh and green.
+cake,蛋糕,/keɪk/,noun,,Happy birthday! Here's your cake.
+croissant,牛角面包,/kwɑːˈsɑːnt/,noun,,I had a croissant with my coffee.
+butter,黄油,/ˈbətər/,noun,,Spread some butter on your bread.
+cream,奶油,/krim/,noun,,Do you want cream in your coffee?
+cheese,奶酪,/ʧiz/,noun,,I love cheese on pizza.
+milk,牛奶,/mɪlk/,noun,,Milk is good for your bones.
+yogurt,酸奶,/ˈjoʊɡərt/,noun,,Yogurt is healthy for breakfast.
+egg,鸡蛋,/ɛg/,noun,,I had two eggs for breakfast.
+fish,鱼,/fɪʃ/,noun,,Fish is healthy to eat.
+seafood,海鲜,/ˈsiˌfud/,noun,,We ordered seafood at the restaurant.
+meat,肉类,/mit/,noun,,Some people don't eat meat.
+water,水,/ˈwɔtər/,noun,,Drink plenty of water every day.
+wine,葡萄酒,/waɪn/,noun,,Would you like some wine with dinner?
+one,一个,/wən/,determiner,,I have one sister.
+two,两个,/tu/,determiner,,There are two cats in the garden.
+three,三个,/θri/,determiner,,We need three more chairs.
+four,四个,/fɔr/,determiner,,She has four children.
+five,五个,/faɪv/,determiner,,The meeting starts at five o'clock.
+many,很多,/ˈmɛni/,determiner,,Many people came to the party.
+a lot of,很多,/ə lɔt əv/,determiner,,There's a lot of work to do.
+few,很少,/fju/,determiner,,Few students passed the exam.
+little,很少,/ˈlɪtəl/,determiner,,I have little time today.
+enough,足够的,/ɪˈnəf/,determiner,,Do we have enough food?
+too much,太多,/tu məʧ/,determiner,,That's too much sugar!
+too many,太多,/tu ˈmɛni/,determiner,,There are too many people here.
+a bottle of,一瓶,/ə ˈbɑtəl əv/,noun,,Can I have a bottle of water?
+a box of,一盒,/ə bɑks əv/,noun,,She gave me a box of chocolates.
+a jar of,一罐,/ə ʤɑr əv/,noun,,I need a jar of honey.
+a glass of,一杯,/ə glæs əv/,noun,,Would you like a glass of juice?
+a cup of,一杯,/ə kəp əv/,noun,,I drink a cup of coffee every morning.
+a packet of,一包,/ə ˈpækɪt əv/,noun,,"Buy a packet of sugar, please."
+a bag of,一袋,/ə bæg əv/,noun,,I bought a bag of apples.
+a kilo of,一公斤,/ə ˈkɪˌloʊ əv/,noun,,I need a kilo of rice.
+a kilogram of,一公斤,/ə ˈkɪləˌgræm əv/,noun,,The recipe needs a kilogram of flour.
+a pound of,一磅,/ə paʊnd əv/,noun,,Can I get a pound of cheese?
+a piece of,一块,/ə pis əv/,noun,,Would you like a piece of cake?
+a slice of,一片,/ə slaɪs əv/,noun,,I'll have a slice of pizza.
+a portion of,一份,/ə ˈpɔrʃən əv/,noun,,This is a large portion of pasta.
+a glass,一个杯子,/ə glæs/,noun,,Fill the glass with water.
+a plate,一个碟子,/ə pleɪt/,noun,,Put your food on the plate.
+a cup,一个咖啡杯,/ə kəp/,noun,,I drink coffee from a cup.
+restaurant,餐厅,/ˈrestrɒnt/,noun,a place where meals are served,We had dinner at a nice restaurant.
+café,咖啡馆,/kæˈfeɪ/,noun,a small restaurant serving coffee and light meals,Let's meet at the café downtown.
+bar,酒吧,/bɑr/,noun,,They went to the bar after work.
+terrace,露台,/ˈtɛrəs/,noun,,We sat on the terrace for lunch.
+table,桌子,/ˈteɪbəl/,noun,,Can we get a table for two?
+chair,椅子,/ʧɛr/,noun,,Please sit in this chair.
+menu,菜单,/ˈmɛnju/,noun,,"Can I see the menu, please?"
+waiter,服务员,/ˈweɪtər/,noun,,The waiter was very friendly.
+waitress,服务员,/ˈweɪtrəs/,noun,,The waitress took our order.
+customer,客人/顾客,/ˈkəstəmər/,noun,,The customer is always right.
+chef,厨师,/ʃɛf/,noun,,The chef cooked a wonderful meal.
+to order,点餐,/ˈɔrdər/,verb,,Are you ready to order?
+order,点菜,/ˈɔrdər/,verb,,I'd like to order the pasta.
+bill,账单,/bɪl/,noun,,"Can we have the bill, please?"
+check,账单,/ʧɛk/,noun,,Could I get the check?
+tip,小费,/tɪp/,noun,,Don't forget to leave a tip.
+appetizer,开胃菜,/ˈæpəˌtaɪzər/,noun,,We shared an appetizer.
+main course,主菜,/meɪn kɔrs/,noun,,What's your main course?
+main dish,主菜,/meɪn dɪʃ/,noun,,The main dish was delicious.
+dessert,甜点,/dɪˈzərt/,noun,,What would you like for dessert?
+plate,盘子,/pleɪt/,noun,,Put the food on your plate.
+bottle,瓶子,/ˈbɑtəl/,noun,,"Open the bottle, please."
+fork,叉子,/fɔrk/,noun,,Use a fork to eat pasta.
+knife,刀子,/naɪf/,noun,,Be careful with that knife.
+spoon,勺子,/spun/,noun,,I need a spoon for soup.
+cup,杯子,/kəp/,noun,,This cup is too hot.
+glass,玻璃,/glæs/,noun,,The glass is full.
+salt,盐,/sɔlt/,noun,,"Pass me the salt, please."
+pepper,胡椒,/ˈpɛpər/,noun,,Add some pepper to taste.
+sugar,糖,/ˈʃʊgər/,noun,,I don't take sugar in my tea.
+coffee,咖啡,/ˈkɔfi/,noun,,I need my morning coffee.
+tea,茶,/ti/,noun,,Would you like some tea?
+hot chocolate,热巧克力,/hɑt ˈʧɔklət/,noun,,Hot chocolate warms you up.
+croissant,牛角面包,/kwɑːˈsɑːnt/,noun,,I had a croissant with my coffee.
+cake,蛋糕,/keɪk/,noun,,Happy birthday! Here's your cake.
+pastry,糕点,/ˈpeɪstri/,noun,,I bought a pastry from the bakery.
+sandwich,三明治,/ˈsænwɪʧ/,noun,,I made a sandwich for lunch.
+drink,喝,/drɪŋk/,verb,,Drink water.
+service,服务,/ˈsərvɪs/,noun,,The service at this restaurant is excellent.
+T-shirt,T恤,/ˈtiˌsərt/,noun,,I wear a T-shirt every day.
+shirt,衬衫,/ʃərt/,noun,,He put on a clean shirt.
+sweater,毛衣,/sˈwɛtər/,noun,,"It's cold, wear a sweater."
+coat,大衣,/koʊt/,noun,,Don't forget your coat.
+jacket,夹克,/ˈʤækɪt/,noun,,This jacket is too small.
+blouse,女式衬衫,/blaʊs/,noun,,She bought a new blouse.
+raincoat,雨衣,/ˈreɪnˌkoʊt/,noun,,"Take your raincoat, it's raining."
+trousers,裤子,/ˈtraʊzərz/,noun,,These trousers don't fit.
+pants,裤子,/pænts/,noun,,I need to buy new pants.
+jeans,牛仔裤,/ʤinz/,noun,,Jeans are comfortable to wear.
+skirt,裙子,/skərt/,noun,,She wore a blue skirt.
+shorts,短裤,/ʃɔrts/,noun,,"It's hot, wear shorts."
+suit,西装,/sut/,noun,,He looks good in a suit.
+dress,连衣裙,/drɛs/,noun,,She wore a beautiful dress.
+accessories,配件,/ækˈsɛsəriz/,noun,,Jewelry and bags are accessories.
+shoes,鞋子,/ʃuz/,noun,,I need new shoes.
+boots,靴子,/buts/,noun,,Wear boots in winter.
+socks,袜子,/sɑks/,noun,,Put on clean socks.
+hat,帽子,/hæt/,noun,,Wear a hat in the sun.
+cap,帽子,/kæp/,noun,,He always wears a cap.
+gloves,手套,/gləvz/,noun,,These gloves keep my hands warm.
+scarf,围巾,/skɑrf/,noun,,A scarf keeps your neck warm.
+belt,腰带,/bɛlt/,noun,,Tighten your belt.
+glasses,眼镜/太阳镜,/ˈglæsɪz/,noun,,I can't read without my glasses.
+sunglasses,眼镜/太阳镜,/ˈsənˌglæsɪz/,noun,,Sunglasses protect your eyes.
+umbrella,雨伞,/ˈəmˌbrɛlə/,noun,,Don't forget your umbrella.
+handbag,手提包,/ˈhændˌbæg/,noun,,She left her handbag at home.
+jewelry,珠宝,/ˈʤuəlri/,noun,,She loves expensive jewelry.
+cotton,棉花,/ˈkɔtən/,noun,,Cotton is soft and comfortable.
+wool,羊毛,/wʊl/,noun,,Wool keeps you warm.
+silk,丝绸,/sɪlk/,noun,,Silk feels smooth.
+leather,皮革,/ˈlɛðər/,noun,,Leather shoes last long.
+wood,木头,/wʊd/,noun,,This table is made of wood.
+stone,石头,/stoʊn/,noun,,The house is built with stone.
+metal,金属,/ˈmɛtəl/,noun,,Metal is strong.
+plastic,塑料,/ˈplæstɪk/,noun,,Plastic bottles are recyclable.
+glass,玻璃,/glæs/,noun,,The glass is full.
+rubber,橡胶,/ˈrəbər/,noun,,Rubber is flexible.
+paper,纸,/ˈpeɪpər/,noun,,Write on paper.
+fabric,布料,/ˈfæbrɪk/,noun,,This fabric is beautiful.
+household chores,家务,/ˈhaʊsˌhoʊld ʧɔrz/,noun,,I do household chores on weekends.
+to do housework,打扫卫生,/du ˈhaʊsˌwərk/,verb,,I need to do housework today.
+to clean,清洁,/klin/,verb,,Let's clean the house.
+to wash,洗,/wɑʃ/,verb,,I wash my clothes every week.
+to sweep,扫地,/swip/,verb,,"Sweep the floor, please."
+to vacuum,使用吸尘器,/ˈvækjum/,verb,,I vacuum the carpet.
+to tidy up,整理,/ˈtaɪdi əp/,verb,,Tidy up your room.
+to organize,整理,/ˈɔrgəˌnaɪz/,verb,,Organize your books.
+to do the dishes,洗碗,/du ðə ˈdɪʃɪz/,verb,,Who will do the dishes?
+to make the bed,铺床,/meɪk ðə bɛd/,verb,,Make your bed every morning.
+to do the laundry,洗衣服,/du ðə ˈlɔndri/,verb,,I do the laundry on Sundays.
+to wash clothes,洗衣服,/wɑʃ kloʊðz/,verb,,I need to wash clothes.
+to iron,熨烫,/aɪərn/,verb,,I iron my shirts.
+ironing,熨烫,/ˈaɪərnɪŋ/,noun,,Ironing takes time.
+to cook,做饭,/kʊk/,verb,,I love to cook dinner.
+to do the shopping,购物,/du ðə ˈʃɑpɪŋ/,verb,,Let's do the shopping together.
+to do DIY,修补,/du diy*/,verb,,He likes to do DIY projects.
+to fix things,修补,/fɪks θɪŋz/,verb,,Can you fix things?
+DIY,修补,/diy*/,noun,,DIY saves money.
+to garden,园艺,/ˈgɑrdən/,verb,,She loves to garden.
+gardening,园艺,/ˈgɑrdənɪŋ/,noun,,Gardening is relaxing.
+vacuum cleaner,吸尘器,/ˈvækjum ˈklinər/,noun,,The vacuum cleaner is broken.
+broom,扫帚,/brum/,noun,,Use a broom to sweep.
+mop,拖把,/mɑp/,noun,,Clean the floor with a mop.
+washing machine,洗衣机,/ˈwɑʃɪŋ məˈʃin/,noun,,Put clothes in the washing machine.
+dishwasher,洗碗机,/ˈdɪʃˌwɑʃər/,noun,,Load the dishwasher.
+free time,空闲时间,/fri taɪm/,noun,,What do you do in your free time?
+to relax,放松,/rɪˈlæks/,verb,,I relax after work.
+to take a walk,散步,/teɪk ə wɔk/,verb,,Let's take a walk in the park.
+to go for a walk,散步,/goʊ fər ə wɔk/,verb,,I go for a walk every evening.
+sport,运动,/spɔrt/,noun,,What sport do you play?
+to do sport,运动,/du spɔrt/,verb,,I do sport three times a week.
+to exercise,运动,/ˈɛksərˌsaɪz/,verb,,Exercise is good for health.
+football,足球,/ˈfʊtˌbɔl/,noun,,Football is popular here.
+soccer,足球,/ˈsɑkər/,noun,,Soccer is fun to play.
+tennis,网球,/ˈtɛnɪs/,noun,,Do you play tennis?
+swimming,游泳,/sˈwɪmɪŋ/,noun,,Swimming is great exercise.
+running,跑步,/ˈrənɪŋ/,noun,,Running keeps me fit.
+cycling,骑自行车,/ˈsaɪkəlɪŋ/,noun,,Cycling is eco-friendly.
+hiking,徒步,/ˈhaɪkɪŋ/,noun,,We went hiking in the mountains.
+to read,阅读,/rɛd/,verb,,I read before bed.
+reading,阅读,/ˈrɛdɪŋ/,noun,,Reading is my hobby.
+to listen to music,听音乐,/ˈlɪsən tɪ mˈjuzɪk/,verb,,I listen to music while working.
+to play music,做音乐，演奏,/pleɪ mˈjuzɪk/,verb,,She loves to play music.
+to watch a movie,看电影,/wɔʧ ə ˈmuvi/,verb,,Let's watch a movie tonight.
+to watch TV,看电视,/wɔʧ ˌtɛləˈvɪʒən/,verb,,I watch TV in the evening.
+to go to the cinema,去电影院,/goʊ tɪ ðə ˈsɪnəmə/,verb,,We go to the cinema on weekends.
+theater,剧院,/ˈθieɪtər/,noun,,The theater is downtown.
+museum,博物馆,/mˈjuziəm/,noun,,The museum is free on Sundays.
+to surf the Internet,上网,/sərf ðə ˈɪntərˌnɛt/,verb,,I surf the Internet every day.
+to go online,上网,/goʊ ˈɔnˌlaɪn/,verb,,I go online to check email.
+cooking,烹饪,/ˈkʊkɪŋ/,noun,,Cooking is an art.
+photography,摄影,/fəˈtɑgrəfi/,noun,,Photography is expensive.
+gardening,园艺,/ˈgɑrdənɪŋ/,noun,,Gardening is relaxing.
+painting,绘画,/ˈpeɪnɪŋ/,noun,,Painting relaxes me.
+to play video games,玩电子游戏,/pleɪ ˈvɪdioʊ geɪmz/,verb,,He plays video games all day.
+to travel,旅行,/ˈtrævəl/,verb,,I love to travel.
+to wake up,醒来,/weɪk əp/,verb,,I wake up at seven.
+to get up,起床,/gɪt əp/,verb,,"Get up, it's morning!"
+to brush one's teeth,刷牙,/brəʃ wənz tiθ/,verb,,Brush your teeth twice a day.
+to wash one's face,洗脸,/wɑʃ wənz feɪs/,verb,,Wash your face with water.
+to comb one's hair,梳理头发,/koʊm wənz hɛr/,verb,,Comb your hair before going out.
+to put on makeup,化妆,/pʊt ɔn ˈmeɪˌkəp/,verb,,She takes time to put on makeup.
+to have breakfast,吃早餐,/hæv ˈbrɛkfəst/,verb,,I have breakfast at eight.
+to get ready,准备,/gɪt ˈrɛdi/,verb,,"Get ready, we're leaving soon."
+to get dressed,穿衣服,/gɪt drɛst/,verb,,Get dressed quickly.
+to shave,剃须,/ʃeɪv/,verb,,He shaves every morning.
+to leave for work,去上班/离开,/liv fər wərk/,verb,,I leave for work at nine.
+to go to work,去上班,/goʊ tɪ wərk/,verb,,I go to work by bus.
+to work,工作,/wərk/,verb,,Does this work?
+to take care of the children,照顾孩子们,/teɪk kɛr əv ðə ˈʧɪldrən/,verb,,She takes care of the children.
+to have lunch,吃午餐,/hæv lənʧ/,verb,,We have lunch at noon.
+to have dinner,吃晚餐,/hæv ˈdɪnər/,verb,,What time do you have dinner?
+to rest,休息,/rɛst/,verb,,Rest after exercise.
+to go home,回家,/goʊ hoʊm/,verb,,I go home after work.
+to take a shower,洗澡,/teɪk ə ʃaʊər/,verb,,I take a shower every morning.
+to go to bed,上床睡觉,/goʊ tɪ bɛd/,verb,,I go to bed at ten.
+to fall asleep,入睡,/fɔl əsˈlip/,verb,,I fall asleep quickly.
+father,父亲,/ˈfɑðər/,noun,,My father is a teacher.
+mother,母亲,/ˈməðər/,noun,,My mother cooks well.
+son,儿子,/sən/,noun,,Their son is five years old.
+daughter,女儿,/ˈdɔtər/,noun,,She has a daughter.
+brother,兄弟,/ˈbrəðər/,noun,,I have one brother.
+sister,姐妹,/ˈsɪstər/,noun,,Do you have a sister?
+parents,父母,/ˈpɛrənts/,noun,,My parents live in the city.
+children,孩子们,/ˈʧɪldrən/,noun,,Children love to play.
+grandfather,祖父,/ˈgrænˌfɑðər/,noun,,My grandfather tells stories.
+grandmother,祖母,/ˈgrændˌməðər/,noun,,Grandmother makes cookies.
+grandson,孙子,/ˈgrændˌsən/,noun,,The grandson visits every week.
+granddaughter,孙女,/ˈgrænˌdɔtər/,noun,,She has a granddaughter.
+uncle,叔叔/舅舅,/ˈəŋkəl/,noun,,My uncle lives nearby.
+aunt,阿姨/姑姑,/ɔnt/,noun,,Aunt Mary is coming today.
+cousin,堂/表兄弟/姐妹,/ˈkəzən/,noun,,I have many cousins.
+husband,丈夫,/ˈhəzbənd/,noun,,Her husband is kind.
+wife,妻子,/waɪf/,noun,,His wife is a doctor.
+stepfather,继父,/ˈstɛpˌfɑðər/,noun,,My stepfather is nice.
+stepmother,继母,/ˈstɛpˌməðər/,noun,,She has a stepmother.
+father-in-law,岳父,/ˈfɑðərɪnˌlɔ/,noun,,I visit my father-in-law.
+mother-in-law,岳母,/ˈməðərɪnˌlɔ/,noun,,She gets along with her mother-in-law.
+brother-in-law,姐夫/妹夫/内兄,/ˈbrəðərɪnˌlɔ/,noun,,My brother-in-law is funny.
+sister-in-law,嫂子/弟媳/大姨子,/ˈsɪstərɪnˌlɔ/,noun,,She likes her sister-in-law.
+single,单身的,/ˈsɪŋgəl/,adjective,,She is single.
+married,已婚的,/ˈmɛrid/,adjective,,They are married.
+divorced,离婚的,/dɪˈvɔrst/,adjective,,He is divorced.
+widowed,丧偶的,/ˈwɪdoʊd/,adjective,,She is widowed.
+engaged,订婚的,/ɪnˈgeɪʤd/,adjective,,They are engaged.
+to get married,结婚,/gɪt ˈmɛrid/,verb,,When will you get married?
+to get engaged,订婚,/gɪt ɪnˈgeɪʤd/,verb,,They got engaged last month.
+to get divorced,离婚,/gɪt dɪˈvɔrst/,verb,,They got divorced last year.
+marriage,婚姻,/ˈmɛrɪʤ/,noun,,Marriage is a big commitment.
+husband,丈夫,/ˈhəzbənd/,noun,,Her husband is kind.
+wife,妻子,/waɪf/,noun,,His wife is a doctor.
+friend,朋友,/frɛnd/,noun,,She is my best friend.
+neighbor,邻居,/ˈneɪbər/,noun,,Our neighbor is friendly.
+colleague,同事,/ˈkɑlig/,noun,,My colleague is helpful.
+classmate,同学,/ˈklæsˌmeɪt/,noun,,She was my classmate.
+partner,伙伴/搭档,/ˈpɑrtnər/,noun,,My partner helps me.
+stranger,陌生人,/ˈstreɪnʤər/,noun,,Don't talk to strangers.
+body,身体,/ˈbɑdi/,noun,,Take care of your body.
+tall,高的,/tɔl/,adjective,,He is very tall.
+short,短的,/ʃɔrt/,adjective,,She is short.
+fat,胖的,/fæt/,adjective,,That word is not polite.
+overweight,胖的,/ˌoʊvərˈweɪt/,adjective,,He is overweight.
+thin,瘦的,/θɪn/,adjective,,She is thin.
+slim,瘦的,/slɪm/,adjective,,She has a slim figure.
+round,圆的,/raʊnd/,adjective,,The table is round.
+of average height,中等身材,/əv ˈævərɪʤ haɪt/,preposition,,He is of average height.
+height,身高/尺寸,/haɪt/,noun,,What's your height?
+beard,胡须,/bɪrd/,noun,,He has a long beard.
+mustache,小胡子,/ˈməˌstæʃ/,noun,,His mustache is neat.
+bearded,有胡子的,/ˈbɪrdəd/,adjective,,The bearded man smiled.
+mustached,有小胡子的,/ˈməˌstæʃt/,adjective,,The mustached waiter served us.
+hair,头发,/hɛr/,noun,,She has long hair.
+blond,金色的,/blɑnd/,adjective,,He has blond hair.
+blonde,金色的,/blɑnd/,adjective,,She is blonde.
+brown,棕色的,/braʊn/,adjective,,Brown eyes are common.
+black,黑色的,/blæk/,adjective,,She has black hair.
+red,红棕色的,/rɛd/,adjective,,Red hair is rare.
+long,长的,/lɔŋ/,adjective,,She has long hair.
+curly,卷的,/ˈkərli/,adjective,,Curly hair is beautiful.
+straight,直的,/streɪt/,adjective,,Her hair is straight.
+eyes,眼睛,/aɪz/,noun,,Your eyes are beautiful.
+blue,蓝色的,/blu/,adjective,,Blue eyes are pretty.
+green,绿色的,/grin/,adjective,,Green eyes are rare.
+big,大的,/bɪg/,adjective,,She has big eyes.
+large,大的,/lɑrʤ/,adjective,,We need a large table for the party.
+small,小的,/smɔl/,adjective,,It's a small house.
+kind,友好的,/kaɪnd/,adjective,,She is very kind.
+nice,友好的，随和的,/nis/,adjective,,He is a nice person.
+friendly,友好的，随和的,/ˈfrɛndli/,adjective,,The staff is friendly.
+generous,慷慨的,/ˈʤɛnərəs/,adjective,,She is generous with money.
+patient,耐心的,/ˈpeɪʃənt/,adjective,,Teachers must be patient.
+optimistic,乐观的,/ˌɑptɪˈmɪstɪk/,adjective,,Stay optimistic!
+funny,有趣的,/ˈfəni/,adjective,,He tells funny jokes.
+intelligent,聪明的,/ˌɪnˈtɛləʤənt/,adjective,,She is very intelligent.
+smart,聪明的,/smɑrt/,adjective,,You are so smart!
+brave,勇敢的,/breɪv/,adjective,,Be brave!
+courageous,勇敢的,/kərˈeɪʤəs/,adjective,,That was courageous.
+mean,坏的/刻薄的,/min/,adjective,,Don't be mean.
+selfish,自私的,/ˈsɛlfɪʃ/,adjective,,Selfish people are not liked.
+impatient,不耐烦的,/ˌɪmˈpeɪʃənt/,adjective,,I'm impatient today.
+pessimistic,悲观的,/ˌpɛsəˈmɪstɪk/,adjective,,Don't be pessimistic.
+sad,悲伤的,/sæd/,adjective,,Why are you sad?
+serious,严肃的,/ˈsɪriəs/,adjective,,He looks serious.
+shy,害羞的,/ʃaɪ/,adjective,,She is shy.
+stressed,有压力的,/strɛst/,adjective,,I'm stressed about work.
+unpleasant,令人不愉快的,/ənˈplɛzənt/,adjective,,That was unpleasant.
+stupid,愚蠢的,/ˈstupɪd/,adjective,,That's a stupid idea.
+silly,愚蠢的,/ˈsɪli/,adjective,,Don't be silly.
+calm,安静的,/kɑm/,adjective,,Stay calm.
+active,活跃的,/ˈæktɪv/,adjective,,Children are very active.
+talkative,健谈的,/ˈtɔkətɪv/,adjective,,She is talkative.
+silent,安静的,/ˈsaɪlənt/,adjective,,The room was silent.
+quiet,安静的,/kwaɪət/,adjective,,Please be quiet.
+housing,住所,/ˈhaʊzɪŋ/,noun,,Housing is expensive here.
+house,房子,/haʊs/,noun,,This house is beautiful.
+elevator,电梯,/ˈɛləˌveɪtər/,noun,,Take the elevator to the fifth floor.
+lift,电梯,/lɪft/,noun,,The lift is broken.
+floor,楼层,/flɔr/,noun,,Which floor do you live on?
+storey,楼层,/ˈstɔri/,noun,,It's a three-storey building.
+room,房间,/rum/,noun,,This room is too small.
+landlord,房东,/ˈlænˌdlɔrd/,noun,,The landlord is nice.
+landlady,房东,/ˈlænˌdleɪdi/,noun,,The landlady collects rent.
+bedroom,卧室,/ˈbɛˌdrum/,noun,,My bedroom is cozy.
+living room,客厅,/ˈlɪvɪŋ rum/,noun,,We watch TV in the living room.
+kitchen,厨房,/ˈkɪʧən/,noun,,The kitchen is clean.
+bathroom,浴室,/ˈbæθˌrum/,noun,,Where is the bathroom?
+toilet,厕所,/ˈtɔɪlət/,noun,,The toilet is over there.
+restroom,厕所,/ˈrɛˌstrum/,noun,,Can I use the restroom?
+hallway,走廊,/ˈhɔlˌweɪ/,noun,,The hallway is narrow.
+corridor,走廊,/ˈkɔrɪdər/,noun,,Walk down the corridor.
+bed,床,/bɛd/,noun,,I sleep in my bed.
+table,桌子,/ˈteɪbəl/,noun,,Can we get a table for two?
+chair,椅子,/ʧɛr/,noun,,Please sit in this chair.
+sofa,沙发,/ˈsoʊfə/,noun,,Sit on the sofa.
+couch,沙发,/kaʊʧ/,noun,,The couch is comfortable.
+wardrobe,衣柜,/ˈwɔrˌdroʊb/,noun,,Hang clothes in the wardrobe.
+closet,衣柜,/ˈklɑzət/,noun,,Put it in the closet.
+bookshelf,书架,/ˈbʊkˌʃɛlf/,noun,,Books are on the bookshelf.
+shelf,架子,/ʃɛlf/,noun,,Put it on the shelf.
+desk,办公桌,/dɛsk/,noun,,I work at my desk.
+lamp,灯,/læmp/,noun,,Turn on the lamp.
+refrigerator,冰箱,/rɪˈfrɪʤərˌeɪtər/,noun,,Food is in the refrigerator.
+fridge,冰箱,/frɪʤ/,noun,,Check the fridge.
+oven,烤箱,/ˈəvən/,noun,,Preheat the oven.
+microwave,微波炉,/ˈmaɪkrəˌweɪv/,noun,,Heat it in the microwave.
+stove,灶具,/stoʊv/,noun,,Cook on the stove.
+dishwasher,洗碗机,/ˈdɪʃˌwɑʃər/,noun,,Load the dishwasher.
+TV,电视,/ˌtɛləˈvɪʒən/,noun,,Turn on the TV.
+television,电视,/ˈtɛləˌvɪʒən/,noun,,What's on television?
+window,窗户,/ˈwɪndoʊ/,noun,,Open the window.
+door,门,/dɔr/,noun,,Close the door.
+wall,墙,/wɔl/,noun,,Hang a picture on the wall.
+ceiling,天花板,/ˈsilɪŋ/,noun,,The ceiling is high.
+carpet,地毯,/ˈkɑrpət/,noun,,The carpet is soft.
+rug,地毯,/rəg/,noun,,There's a rug on the floor.
+house,房子,/haʊs/,noun,,This house is beautiful.
+apartment,公寓,/əˈpɑrtmənt/,noun,,I live in an apartment.
+flat,公寓,/flæt/,noun,,The flat has two rooms.
+studio,单间公寓,/ˈstudiˌoʊ/,noun,,A studio is small.
+building,建筑,/ˈbɪldɪŋ/,noun,,That building is tall.
+floor,楼层,/flɔr/,noun,,Which floor do you live on?
+storey,楼层,/ˈstɔri/,noun,,It's a three-storey building.
+ground floor,底层,/graʊnd flɔr/,noun,,The shop is on the ground floor.
+stairs,楼梯,/stɛrz/,noun,,Take the stairs.
+elevator,电梯,/ˈɛləˌveɪtər/,noun,,Take the elevator to the fifth floor.
+lift,电梯,/lɪft/,noun,,The lift is broken.
+hallway,走廊,/ˈhɔlˌweɪ/,noun,,The hallway is narrow.
+corridor,走廊,/ˈkɔrɪdər/,noun,,Walk down the corridor.
+balcony,阳台,/ˈbælkəni/,noun,,We have coffee on the balcony.
+garden,花园,/ˈgɑrdən/,verb,,We have a garden.
+garage,车库,/gərɑʒ/,noun,,Park the car in the garage.
+front door,入口门,/frənt dɔr/,noun,,Ring the bell at the front door.
+downtown,市中心,/ˈdaʊnˈtaʊn/,noun,,I work downtown.
+city center,市中心,/ˈsɪti ˈsɛnər/,noun,,The city center is busy.
+suburb,郊区,/ˈsəbərb/,noun,,We live in the suburbs.
+countryside,乡村,/ˈkəntriˌsaɪd/,noun,,The countryside is peaceful.
+near,靠近,/nɪr/,preposition,,The shop is near here.
+far from,远离,/fɑr frəm/,preposition,,It's far from the city.
+to repair,修理,/rɪˈpɛr/,verb,,Can you repair this?
+to fix,修理,/fɪks/,verb,,I need to fix my bike.
+to break,打破,/breɪk/,verb,,Don't break it!
+to work,工作,/wərk/,verb,,Does this work?
+not to work,不工作/坏了,/nɑt tɪ wərk/,noun,,This doesn't work.
+to stop working,停止工作,/stɑp ˈwərkɪŋ/,verb,,My phone stopped working.
+hammer,锤子,/ˈhæmər/,noun,,Use a hammer to nail.
+screwdriver,螺丝刀,/ˈskruˌdraɪvər/,noun,,I need a screwdriver.
+key,钥匙/扳手,/ki/,noun,,I lost my key.
+wrench,钥匙/扳手,/rɛnʧ/,noun,,Pass me the wrench.
+pliers,钳子,/plaɪərz/,noun,,Use pliers to hold it.
+drill,电钻,/drɪl/,noun,,The drill is loud.
+tools,工具,/tulz/,noun,,I need my tools.
+light bulb,灯泡,/laɪt bəlb/,noun,,Change the light bulb.
+faucet,水龙头,/ˈfɔsət/,noun,,The faucet is leaking.
+tap,水龙头,/tæp/,noun,,Turn off the tap.
+lock,锁,/lɑk/,noun,,Lock the door.
+breakdown,故障,/ˈbreɪkˌdaʊn/,noun,,We had a breakdown.
+fault,故障,/fɔlt/,noun,,It's not my fault.
+broken,出故障,/ˈbroʊkən/,adjective,,This is broken.
+problem,问题,/ˈprɑbləm/,noun,,What's the problem?
+repair,修理,/rɪˈpɛr/,verb,,The repair costs a lot.
+repairs,修理工作,/rɪˈpɛrz/,noun,,Repairs take time.
+water leak,漏水,/ˈwɔtər lik/,noun,,There's a water leak.
+electrician,电工,/ɪlɛkˈtrɪʃən/,noun,,Call an electrician.
+plumber,水管工,/ˈpləmər/,noun,,The plumber fixed it.
+locksmith,锁匠,/ˈlɑksˌmɪθ/,noun,,I need a locksmith.
+to travel,旅行,/ˈtrævəl/,verb,,I love to travel.
+to leave,出发,/liv/,verb,,When do you leave?
+to arrive,到达,/əraɪv/,verb,,We arrive at three.
+to visit,参观,/ˈvɪzɪt/,verb,,I want to visit Paris.
+to go on vacation,去度假,/goʊ ɔn veɪˈkeɪʃən/,verb,,We go on vacation in summer.
+plane,飞机,/pleɪn/,noun,,The plane is delayed.
+train,火车,/treɪn/,noun,,Take the train.
+car,汽车,/kɑr/,noun,,I drive a car.
+bus,公交车,/bəs/,noun,,The bus is coming.
+subway,地铁,/ˈsəbˌweɪ/,noun,,Take the subway downtown.
+metro,地铁,/ˈmɛˌtroʊ/,noun,,The metro is fast.
+boat,船,/boʊt/,noun,,We took a boat trip.
+ship,船,/ʃɪp/,noun,,The ship is huge.
+bicycle,自行车,/ˈbaɪsɪkəl/,noun,,Ride a bicycle.
+bike,自行车,/baɪk/,noun,,I ride my bike to work.
+trip,旅行,/trɪp/,noun,,Have a good trip!
+journey,旅行,/ˈʤərni/,noun,,The journey was long.
+vacation,假期,/veɪˈkeɪʃən/,noun,,I need a vacation.
+holiday,假期,/ˈhɑlɪˌdeɪ/,noun,,Happy holidays!
+ticket,票,/ˈtɪkɪt/,noun,,Buy a ticket online.
+suitcase,行李箱,/ˈsutˌkeɪs/,noun,,Pack your suitcase.
+hotel,酒店,/hoʊˈtɛl/,noun,,We stayed at a hotel.
+destination,目的地,/ˌdɛstɪˈneɪʃən/,noun,,What's your destination?
+passport,护照,/ˈpæˌspɔrt/,noun,,Don't forget your passport.
+camping,露营,/ˈkæmpɪŋ/,noun,,Camping is fun.
+single room,单人房,/ˈsɪŋgəl rum/,noun,,I booked a single room.
+double room,双人房,/ˈdəbəl rum/,noun,,We need a double room.
+parking,停车场,/ˈpɑrkɪŋ/,noun,,Is there parking?
+swimming pool,游泳池,/sˈwɪmɪŋ pul/,noun,,The swimming pool is open.
+Wi-Fi,无线网络,/ˈwaɪˌfaɪ/,noun,,Is there Wi-Fi here?
+Internet,无线网络,/ˈɪntərˌnɛt/,noun,,The Internet is slow.
+to be hungry,饿了,/bi ˈhəŋgri/,verb,,I'm hungry.
+to be thirsty,渴了,/bi ˈθərsti/,verb,,Are you thirsty?
+to be hot,热,/bi hɑt/,verb,,I'm hot.
+to be cold,冷,/bi koʊld/,verb,,I'm cold.
+to be in pain,疼痛,/bi ɪn peɪn/,verb,,I'm in pain.
+to be tired,疲惫,/bi taɪərd/,verb,,I'm tired.
+to be sick,生病,/bi sɪk/,verb,,I'm sick today.
+to feel,感觉,/fil/,verb,,How do you feel?
+to touch,触摸,/təʧ/,verb,,Don't touch that!
+to see,看见,/si/,verb,,Can you see it?
+to hear,听见,/hir/,verb,,I can't hear you.
+to taste,品尝,/teɪst/,verb,,"Taste this, it's good."
+hunger,饥饿,/ˈhəŋgər/,noun,,I feel hunger.
+thirst,口渴,/θərst/,noun,,Quench your thirst.
+pain,疼痛,/peɪn/,noun,,I have pain in my back.
+fatigue,疲劳,/fəˈtig/,noun,,Fatigue makes me sleepy.
+cold,感冒,/koʊld/,noun,,I caught a cold.
+heat,热,/hit/,noun,,The heat is unbearable.
+humid,潮湿的,/ˈjumɪd/,adjective,,It's humid today.
+hot,热的,/hɑt/,adjective,,It's hot outside.
+dry,干燥的,/draɪ/,adjective,,The air is dry.
+comfortable,舒适的,/ˈkəmfərtəbəl/,adjective,,This chair is comfortable.
+noisy,吵闹的,/ˈnɔɪzi/,adjective,,It's too noisy here.
+silent,安静的,/ˈsaɪlənt/,adjective,,The room was silent.
+quiet,安静的,/kwaɪət/,adjective,,Please be quiet.
+colorful,多彩的,/ˈkələrfəl/,adjective,,The garden is colorful.
+happy,高兴的,/ˈhæpi/,adjective,,I'm happy today.
+sad,悲伤的,/sæd/,adjective,,Why are you sad?
+excited,兴奋的,/ɪkˈsaɪtɪd/,adjective,,I'm excited about the trip.
+anxious,焦虑的,/ˈæŋʃəs/,adjective,,Don't be anxious.
+tired,疲倦的,/taɪərd/,adjective,,This is tired.
+relaxed,放松的,/rɪˈlækst/,adjective,,I feel relaxed.
+horrible,可怕的,/ˈhɔrəbəl/,adjective,,That's horrible!
+delicious,美味的,/dɪˈlɪʃəs/,adjective,,This food is delicious!
+sweet,甜的,/swit/,adjective,,This cake is too sweet.
+salty,咸的,/ˈsɔlti/,adjective,,The soup is too salty.
+spicy,辣的,/ˈspaɪsi/,adjective,,I don't like spicy food.
+soft,柔软的/温和的,/sɔft/,adjective,,This pillow is soft.
+sharp,刺激的,/ʃɑrp/,adjective,,"Be careful, it's sharp."
+problem,问题,/ˈprɑbləm/,noun,,What's the problem?
+difficulty,困难,/ˈdɪfɪˌkəlti/,noun,,I have difficulty with math.
+worry,担忧,/ˈwəri/,verb,,Don't worry.
+concern,担忧,/kənˈsərn/,noun,,That's a concern.
+stress,压力,/strɛs/,noun,,Work causes stress.
+money problems,金钱问题,/ˈməni ˈprɑbləmz/,noun,,We have money problems.
+work problems,工作问题,/wərk ˈprɑbləmz/,noun,,There are work problems.
+health problems,健康问题,/hɛlθ ˈprɑbləmz/,noun,,She has health problems.
+family problems,家庭问题,/ˈfæməli ˈprɑbləmz/,noun,,They have family problems.
+transport problems,交通问题,/ˈtrænspɔrt ˈprɑbləmz/,noun,,There are transport problems.
+traffic jam,交通堵塞,/ˈtræfɪk ʤæm/,noun,,We're stuck in a traffic jam.
+delay,迟到,/dɪˈleɪ/,noun,,Sorry for the delay.
+to be late,迟到,/bi leɪt/,verb,,Don't be late!
+to arrive late,迟到到达,/əraɪv leɪt/,verb,,I arrived late.
+strike,罢工,/straɪk/,noun,,There's a train strike.
+breakdown,故障,/ˈbreɪkˌdaʊn/,noun,,We had a breakdown.
+fault,故障,/fɔlt/,noun,,It's not my fault.
+to break down,出故障,/breɪk daʊn/,verb,,The car broke down.
+to forget,忘记,/fərˈgɛt/,verb,,Don't forget your keys.
+to lose,丢失,/luz/,verb,,I always lose my keys.
+to get lost,迷路,/gɪt lɔst/,verb,,We got lost.
+to miss,错过,/mɪs/,verb,,I miss you.
+to have a problem,有问题,/hæv ə ˈprɑbləm/,verb,,Do you have a problem?
+to solve,解决,/sɑlv/,verb,,Let's solve this problem.
+to worry,担心,/ˈwəri/,verb,,Don't worry about it.
+to be concerned,担忧,/bi kənˈsərnd/,verb,,I'm concerned about you.
+happy,高兴的,/ˈhæpi/,adjective,,I'm happy today.
+content,满意的,/ˈkɑntɛnt/,adjective,,I'm content with my life.
+satisfied,满意的,/ˈsætɪsˌfaɪd/,adjective,,Are you satisfied?
+joyful,快乐的,/ˈʤɔɪfəl/,adjective,,She is joyful.
+proud,骄傲的,/praʊd/,adjective,,I'm proud of you.
+excited,兴奋的,/ɪkˈsaɪtɪd/,adjective,,I'm excited about the trip.
+in love,恋爱的,/ɪn ləv/,adjective,,They are in love.
+sad,悲伤的,/sæd/,adjective,,Why are you sad?
+unhappy,不幸的,/ənˈhæpi/,adjective,,Why are you unhappy?
+angry,生气的,/ˈæŋgri/,adjective,,Don't be angry.
+annoyed,恼怒的,/əˈnɔɪd/,adjective,,I'm annoyed.
+disappointed,失望的,/ˌdɪsəˈpɔɪnɪd/,adjective,,I'm disappointed.
+worried,担心的,/ˈwərid/,adjective,,I'm worried about you.
+anxious,焦虑的,/ˈæŋʃəs/,adjective,,Don't be anxious.
+stressed,有压力的,/strɛst/,adjective,,I'm stressed about work.
+panicked,恐慌的,/ˈpænɪkt/,adjective,,Don't panic!
+joy,快乐,/ʤɔɪ/,noun,,This brings me joy.
+sadness,悲伤,/ˈsædnəs/,noun,,I feel sadness.
+anger,愤怒,/ˈæŋgər/,noun,,Control your anger.
+disappointment,失望,/ˌdɪsəˈpɔɪntmənt/,noun,,I feel disappointment.
+surprise,惊讶,/səˈpraɪz/,noun,,What a surprise!
+concern,担忧,/kənˈsərn/,noun,,That's a concern.
+worry,担忧,/ˈwəri/,verb,,Don't worry.
+panic,恐慌,/ˈpænɪk/,noun,,Don't panic!
+stress,压力,/strɛs/,noun,,Work causes stress.
+fear,恐惧,/fɪr/,noun,,I have no fear.
+love,爱,/ləv/,verb,,I love you.
+head,头,/hɛd/,noun,,My head hurts.
+neck,脖子,/nɛk/,noun,,My neck is stiff.
+shoulder,肩膀,/ˈʃoʊldər/,noun,,I hurt my shoulder.
+arm,手臂,/ɑrm/,noun,,Raise your arm.
+hand,手,/hænd/,noun,,Shake my hand.
+finger,手指,/ˈfɪŋgər/,noun,,Point with your finger.
+chest,胸部,/ʧɛst/,noun,,My chest hurts.
+back,背,/bæk/,noun,,My back is sore.
+leg,腿,/lɛg/,noun,,I broke my leg.
+foot,脚,/fʊt/,noun,,My foot hurts.
+face,脸,/feɪs/,noun,,Wash your face.
+eyes,眼睛,/aɪz/,noun,,Your eyes are beautiful.
+nose,鼻子,/noʊz/,noun,,My nose is running.
+mouth,嘴巴,/maʊθ/,noun,,Open your mouth.
+lips,嘴唇,/lɪps/,noun,,Her lips are red.
+teeth,牙齿,/tiθ/,noun,,Brush your teeth.
+ears,耳朵,/ɪrz/,noun,,My ears are cold.
+hair,头发,/hɛr/,noun,,She has long hair.
+forehead,额头,/ˈfɔrhɛd/,noun,,She has a high forehead.
+chin,下巴,/ʧɪn/,noun,,He has a strong chin.
+to be sick,生病,/bi sɪk/,verb,,I'm sick today.
+to be ill,生病,/bi ɪl/,verb,,She is ill.
+illness,疾病,/ˈɪlnəs/,noun,,The illness is serious.
+disease,疾病,/dɪˈziz/,noun,,This disease is rare.
+cold,感冒,/koʊld/,noun,,I caught a cold.
+flu,流感,/flu/,noun,,I have the flu.
+fever,发烧,/ˈfivər/,noun,,She has a fever.
+cough,咳嗽,/kɔf/,noun,,I have a bad cough.
+headache,头疼,/ˈhɛˌdeɪk/,noun,,I have a headache.
+sore throat,喉咙疼,/sɔr θroʊt/,noun,,I have a sore throat.
+to have a fever,发烧,/hæv ə ˈfivər/,verb,,The child has a fever.
+to have a pain,疼痛（某处）,/hæv ə peɪn/,verb,,I have a pain in my leg.
+fatigue,疲劳,/fəˈtig/,noun,,Fatigue makes me sleepy.
+to be tired,疲惫,/bi taɪərd/,verb,,I'm tired.
+doctor,医生,/ˈdɔktər/,noun,,See a doctor.
+hospital,医院,/ˈhɑˌspɪtəl/,noun,,Go to the hospital.
+pharmacy,药店,/ˈfɑːrməsi/,noun,,Can you stop at the pharmacy for me?
+drugstore,药店,/ˈdrəgˌstɔr/,noun,,I need to pick up medicine at the drugstore.
+medicine,药物,/ˈmɛdəsən/,noun,,Take your medicine.
+medication,药物,/ˌmɛdəˈkeɪʃən/,noun,,Are you on medication?
+pill,药丸,/pɪl/,noun,,Take one pill.
+tablet,药片,/ˈtæblət/,noun,,Swallow the tablet.
+prescription,处方,/prəˈskrɪpʃən/,noun,,I need a prescription.
+to take medicine,吃药,/teɪk ˈmɛdəsən/,verb,,Take medicine after meals.
+aspirin,阿司匹林,/ˈæsprɪn/,noun,,Take an aspirin.
+bandage,绷带,/ˈbændɪʤ/,noun,,Put a bandage on it.
+ointment,药膏,/ˈɔɪntmənt/,noun,,Apply the ointment.
+syrup,糖浆,/ˈsɪrəp/,noun,,Take cough syrup.
+thermometer,温度计,/θərˈmɑmətər/,noun,,Check your temperature with a thermometer.
+to get sick,生病,/gɪt sɪk/,verb,,I got sick.
+to recover,治愈,/rɪˈkəvər/,verb,,I hope you recover soon.
+to get better,治愈,/gɪt ˈbɛtər/,verb,,Get better soon!
+to treat,治疗,/trit/,verb,,How do you treat this?
+to go to the doctor,去看医生,/goʊ tɪ ðə ˈdɔktər/,verb,,I need to go to the doctor.
+to have a headache,头疼,/hæv ə ˈhɛˌdeɪk/,verb,,I have a headache.
+to have a sore throat,喉咙疼,/hæv ə sɔr θroʊt/,verb,,I have a sore throat.
+to have back pain,背疼,/hæv bæk peɪn/,verb,,I have back pain.
+to have a toothache,牙疼,/hæv ə toothache*/,verb,,I have a toothache.
+university,大学,/ˌjunəˈvərsəti/,noun,,I study at university.
+school,学校,/skul/,noun,,School starts at eight.
+high school,高中,/haɪ skul/,noun,,I went to high school here.
+campus,校园,/ˈkæmpəs/,noun,,The campus is beautiful.
+library,图书馆,/ˈlaɪbrɛˌri/,noun,,Study in the library.
+classroom,教室,/ˈklæsˌrum/,noun,,The classroom is full.
+cafeteria,食堂,/ˌkæfəˈtɪriə/,noun,,Eat lunch in the cafeteria.
+canteen,,/kænˈtin/,noun,,The canteen is crowded.
+gym,健身房,/ʤɪm/,noun,,I go to the gym.
+laboratory,实验室,/ˈlæbrəˌtɔri/,noun,,We have class in the laboratory.
+lab,实验室,/læb/,noun,,The lab is closed.
+secretary,秘书,/ˈsɛkrəˌtɛri/,noun,,Talk to the secretary.
+department,部门,/dɪˈpɑrtmənt/,noun,,Which department?
+to study,学习,/ˈstədi/,verb,,I study English.
+to learn,学习,/lərn/,verb,,I want to learn French.
+lesson,课程,/ˈlɛsən/,noun,,The lesson is interesting.
+course,课程,/kɔrs/,noun,,I take a course online.
+exam,考试,/ɪgˈzæm/,noun,,The exam is difficult.
+examination,考试,/ɪgˌzæməˈneɪʃən/,noun,,The examination is tomorrow.
+homework,作业,/ˈhoʊmˌwərk/,noun,,Do your homework.
+book,书,/bʊk/,noun,,Read this book.
+notebook,笔记本,/ˈnoʊtˌbʊk/,noun,,Write in your notebook.
+student,学生,/ˈstudənt/,noun,,She is a good student.
+professor,教师,/prəˈfɛsər/,noun,,The professor is smart.
+teacher,教师,/ˈtiʧər/,noun,,My teacher is kind.
+classmate,同学,/ˈklæsˌmeɪt/,noun,,She was my classmate.
+company,企业,/ˈkəmpəˌni/,noun,,I work for a company.
+business,企业,/ˈbɪznɪs/,noun,,It's good business.
+office,办公室,/ˈɔfəs/,noun,,I work in an office.
+factory,工厂,/ˈfæktəri/,noun,,The factory is closed.
+shop,商店,/ʃɑp/,noun,a place where goods are sold,Let's go to the shop after school.
+store,商店,/stɔr/,noun,a place where goods are sold,This store has great prices.
+work,工作,/wərk/,verb,,I work every day.
+profession,职业,/prəˈfɛʃən/,noun,,What's your profession?
+job,职业,/ʤɑb/,noun,,I love my job.
+doctor,医生,/ˈdɔktər/,noun,,See a doctor.
+nurse,护士,/nərs/,noun,,She is a nurse.
+teacher,教师,/ˈtiʧər/,noun,,My teacher is kind.
+professor,教师,/prəˈfɛsər/,noun,,The professor is smart.
+engineer,工程师,/ˈɛnʤəˈnɪr/,noun,,He is an engineer.
+cook,做饭,/kʊk/,verb,,I cook dinner.
+chef,厨师,/ʃɛf/,noun,,The chef cooked a wonderful meal.
+waiter,服务员,/ˈweɪtər/,noun,,The waiter was very friendly.
+waitress,服务员,/ˈweɪtrəs/,noun,,The waitress took our order.
+salesperson,售货员,/ˈseɪlzˌpərsən/,noun,,The salesperson helped me.
+lawyer,律师,/ˈlɔjər/,noun,,She is a lawyer.
+to work,工作,/wərk/,verb,,Does this work?
+colleague,同事,/ˈkɑlig/,noun,,My colleague is helpful.
+boss,老板,/bɔs/,noun,,My boss is strict.
+salary,工资,/ˈsæləri/,noun,,What's your salary?
+vacation,假期,/veɪˈkeɪʃən/,noun,,I need a vacation.
+holiday,假期,/ˈhɑlɪˌdeɪ/,noun,,Happy holidays!
+manager,管理者,/ˈmænɪʤər/,noun,,The manager is busy.
+employee,员工,/ɪmˈplɔɪi/,noun,,Every employee works hard.
+city,城市,/ˈsɪti/,noun,,I live in a big city.
+downtown,市中心,/ˈdaʊnˈtaʊn/,noun,,I work downtown.
+city center,市中心,/ˈsɪti ˈsɛnər/,noun,,The city center is busy.
+suburb,郊区,/ˈsəbərb/,noun,,We live in the suburbs.
+street,街道,/strit/,noun,,Walk down the street.
+neighborhood,街区,/ˈneɪbərˌhʊd/,noun,,I love this neighborhood.
+building,建筑,/ˈbɪldɪŋ/,noun,,That building is tall.
+traffic jam,交通堵塞,/ˈtræfɪk ʤæm/,noun,,We're stuck in a traffic jam.
+pollution,污染,/pəˈluʃən/,noun,,Pollution is a problem.
+calm,安静的,/kɑm/,adjective,,Stay calm.
+quiet,安静的,/kwaɪət/,adjective,,Please be quiet.
+pleasant,愉快的，宜人的,/ˈplɛzənt/,adjective,,The weather is pleasant.
+countryside,乡村,/ˈkəntriˌsaɪd/,noun,,The countryside is peaceful.
+village,村庄,/ˈvɪlɪʤ/,noun,,I grew up in a village.
+garden,花园,/ˈgɑrdən/,verb,,We have a garden.
+farm,农场,/fɑrm/,noun,,The farm is large.
+field,田野,/fild/,noun,,Cows are in the field.
+forest,森林,/ˈfɔrɪst/,noun,,We walked through the forest.
+mountain,山,/ˈmaʊntən/,noun,,The mountain is high.
+square,广场,/skwɛr/,noun,,Meet me at the square.
+park,公园,/pɑrk/,noun,,Let's go to the park.
+train station,火车站,/treɪn ˈsteɪʃən/,noun,,The train station is busy.
+airport,机场,/ˈɛrˌpɔrt/,noun,,We're at the airport.
+bridge,桥,/brɪʤ/,noun,,Cross the bridge.
+be,是,/bi/,verb,,Be careful!
+have,吃/喝；“来一份/喝一杯”,/hæv/,verb,,I have a cat.
+go,去,/goʊ/,verb,,Let's go!
+come,来,/kəm/,verb,,Come here!
+do,做,/du/,verb,,What do you do?
+make,做,/meɪk/,verb,,Make a wish.
+want,想要,/wɔnt/,verb,,What do you want?
+can,能够,/kən/,verb,,Can you help me?
+be able to,能够,/bi ˈeɪbəl tɪ/,verb,,I'm able to swim.
+must,必须,/məst/,verb,,You must study.
+have to,必须,/hæv tɪ/,verb,,I have to go.
+know,认识，熟悉,/noʊ/,verb,,I know him.
+be familiar with,认识，熟悉,/bi fəˈmɪljər wɪθ/,verb,,I'm familiar with this.
+eat,吃,/it/,verb,,Let's eat!
+drink,喝,/drɪŋk/,verb,,Drink water.
+have,吃/喝；“来一份/喝一杯”,/hæv/,verb,,I have a cat.
+take,拿，取,/teɪk/,verb,,Take this.
+cook,做饭,/kʊk/,verb,,I cook dinner.
+prepare,准备,/priˈpɛr/,verb,,Prepare for the exam.
+sleep,睡觉,/slip/,verb,,I sleep eight hours.
+rest,休息,/rɛst/,verb,,Rest a bit.
+go to bed,上床睡觉,/goʊ tɪ bɛd/,noun,,It's time to go to bed.
+fall asleep,入睡,/fɔl əsˈlip/,noun,,I fall asleep quickly.
+work,工作,/wərk/,verb,,I work every day.
+study,学习,/ˈstədi/,verb,,I study every day.
+learn,学习,/lərn/,verb,,I learn every day.
+teach,教,/tiʧ/,verb,,I teach English.
+buy,买,/baɪ/,verb,,I want to buy a car.
+sell,卖,/sɛl/,verb,,I sell my old books.
+pay,付钱,/peɪ/,verb,,Pay the bill.
+give,给,/gɪv/,verb,,Give me that.
+take (a bus,乘坐,/teɪk/,noun,,I take a bus to work.
+train),乘坐,/treɪn)/,noun,,I take the train to the city.
+put on,穿上,/pʊt ɔn/,verb,,Put on your coat.
+wear,穿着,/wɛr/,verb,,What will you wear?
+carry,携带,/ˈkɛri/,verb,,Can you carry this?
+speak,说,/spik/,verb,,Speak slowly.
+say,说,/seɪ/,verb,,What did you say?
+tell,告诉,/tɛl/,verb,,Tell me a story.
+talk,聊天，谈话,/tɔk/,verb,,Let's talk.
+explain,解释,/ɪkˈspleɪn/,verb,,Explain this to me.
+ask,问,/æsk/,verb,,Ask a question.
+answer,回答,/ˈænsər/,verb,,Answer the question.
+listen,听,/ˈlɪsən/,verb,,Listen carefully.
+hear,听到,/hir/,verb,,I hear every day.
+look (at),看,/lʊk/,noun,,Look at that!
+watch,观看,/wɔʧ/,verb,,Watch this movie.
+see,看见,/si/,verb,,I see every day.
+read,读,/rɛd/,verb,,I read books.
+write,写,/raɪt/,verb,,Write your name.
+understand,理解,/ˌəndərˈstænd/,verb,,Do you understand?
+walk,走,/wɔk/,verb,,Let's walk.
+run,跑,/rən/,verb,,Run fast!
+jump,跳,/ʤəmp/,verb,,Jump high!
+go up,上，爬,/goʊ əp/,noun,,Go up the stairs.
+climb,上，爬,/klaɪm/,verb,,Climb the mountain.
+go down,下,/goʊ daʊn/,noun,,Go down slowly.
+enter,进入,/ˈɛnər/,verb,,Enter the room.
+go out,出去,/goʊ aʊt/,noun,,Let's go out.
+arrive,到达,/əraɪv/,verb,,When do you arrive?
+leave,离开,/liv/,verb,,Don't leave!
+quit,离开，辞职,/kwɪt/,verb,,I quit my job.
+sit down,坐下,/sɪt daʊn/,verb,,"Sit down, please."
+stand up,站起来,/stænd əp/,verb,,Stand up!
+stay,停留,/steɪ/,verb,,Stay here.
+live,居住；生活,/lɪv/,verb,,Where do you live?
+pass,经过，通过,/pæs/,verb,,Pass me the salt.
+cross,穿过,/krɔs/,verb,,Cross the street.
+turn,转弯,/tərn/,verb,,Turn left.
+stop,停止,/stɑp/,verb,,Stop here.
+like,喜欢,/laɪk/,verb,,I like coffee.
+love,爱,/ləv/,verb,,I love you.
+adore,非常喜欢，热爱,/əˈdɔr/,verb,,I adore chocolate.
+prefer,更喜欢,/prɪˈfər/,verb,,I prefer tea.
+hate,讨厌,/heɪt/,verb,,I hate waiting.
+feel like,想要,/fil laɪk/,verb,,I feel like eating.
+feel,感觉,/fil/,verb,,I feel every day.
+smell,闻,/smɛl/,verb,,This smells good.
+touch,触摸,/təʧ/,verb,,I touch every day.
+taste,品尝,/teɪst/,verb,,I taste every day.
+think,想，认为,/θɪŋk/,verb,,I think so.
+believe,相信,/bɪˈliv/,verb,,I believe you.
+find,发现；觉得,/faɪnd/,verb,,I find it difficult.
+seem,似乎,/sim/,verb,,It seems easy.
+hope,希望,/hoʊp/,verb,,I hope so.
+wish,祝愿,/wɪʃ/,verb,,I wish you well.
+need,需要,/nid/,verb,,I need help.
