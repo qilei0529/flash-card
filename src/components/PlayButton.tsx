@@ -1,8 +1,13 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react"
 import { Play, Loader2 } from "lucide-react"
 import { getAudioUrl } from "@/lib/audioCache"
+
+export interface PlayButtonHandle {
+  play(): void
+  stop(): void
+}
 
 interface PlayButtonProps {
   text: string
@@ -11,7 +16,10 @@ interface PlayButtonProps {
   className?: string
 }
 
-export function PlayButton({ text, lang, tag = "word", className = "" }: PlayButtonProps) {
+export const PlayButton = forwardRef<PlayButtonHandle, PlayButtonProps>(function PlayButton(
+  { text, lang, tag = "word", className = "" },
+  ref
+) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -93,6 +101,15 @@ export function PlayButton({ text, lang, tag = "word", className = "" }: PlayBut
     }
   }
 
+  useImperativeHandle(ref, () => ({
+    play() {
+      if (!isPlaying && !loading) handlePlay()
+    },
+    stop() {
+      handleStop()
+    },
+  }), [isPlaying, loading])
+
   return (
     <button
       onClick={handleClick}
@@ -121,4 +138,4 @@ export function PlayButton({ text, lang, tag = "word", className = "" }: PlayBut
       )}
     </button>
   )
-}
+})

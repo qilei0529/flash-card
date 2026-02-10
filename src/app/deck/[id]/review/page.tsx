@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, RotateCcw, CheckCircle2 } from "lucide-react";
@@ -14,10 +14,11 @@ import {
 import { recordReview } from "@/lib/review";
 import {
   createSession,
+  getSession,
   getSessionCards,
   incrementSessionProgress,
 } from "@/lib/session";
-import { PlayButton } from "@/components/PlayButton";
+import { PlayButton, type PlayButtonHandle } from "@/components/PlayButton";
 import { getAudioUrl } from "@/lib/audioCache";
 import type { Card, Deck } from "@/types";
 
@@ -39,6 +40,7 @@ export default function ReviewPage() {
   const [deck, setDeck] = useState<Deck | null>(null);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(sessionId);
   const [sessionCompleted, setSessionCompleted] = useState(false);
+  const playButtonRef = useRef<PlayButtonHandle>(null);
 
   useEffect(() => {
     loadDeckAndCards();
@@ -98,17 +100,18 @@ export default function ReviewPage() {
         e.preventDefault();
         const card = cards[index];
         if (!card || !deck?.language) return;
-        const text = isWordCard(card)
-          ? card.data.word
-          : isSentenceCard(card)
-            ? card.data.sentence
-            : "";
-        const tag = isWordCard(card) ? "word" : "sentence";
-        if (!text) return;
-        getAudioUrl(text, deck.language, tag).then((url) => {
-          const audio = new Audio(url);
-          audio.play().catch(() => {});
-        });
+        if (isWordCard(card)) {
+          playButtonRef.current?.play();
+          return;
+        }
+        if (isSentenceCard(card)) {
+          const text = card.data.sentence;
+          if (!text) return;
+          getAudioUrl(text, deck.language, "sentence").then((url) => {
+            const audio = new Audio(url);
+            audio.play().catch(() => {});
+          });
+        }
       }
     }
     window.addEventListener("keydown", handleKeyDown);
@@ -124,13 +127,21 @@ export default function ReviewPage() {
 
     setDeck(d);
 
-    // If sessionId exists, load cards from session
+    // If sessionId exists, load cards from session and resume at saved progress
     if (sessionId) {
-      const sessionCards = await getSessionCards(sessionId);
-      if (sessionCards.length > 0) {
+      const [session, sessionCards] = await Promise.all([
+        getSession(sessionId),
+        getSessionCards(sessionId),
+      ]);
+      if (session && sessionCards.length > 0) {
         setCards(sessionCards);
         setCurrentSessionId(sessionId);
-        setIndex(0);
+        // Resume at the next card to review (completedCards = number already done)
+        const resumeIndex = Math.min(
+          session.completedCards,
+          Math.max(0, sessionCards.length - 1)
+        );
+        setIndex(resumeIndex);
         setRevealStage("front");
         setLoading(false);
         return;
@@ -333,6 +344,7 @@ export default function ReviewPage() {
                   {deck?.language && (
                   <span className="-mr-8">
                   <PlayButton
+                    ref={playButtonRef}
                     text={card.data.word}
                     lang={deck.language}
                     tag="word"
@@ -377,6 +389,7 @@ export default function ReviewPage() {
                 {deck?.language && (
                   <span className="-mr-8">
                   <PlayButton
+                    ref={playButtonRef}
                     text={card.data.word}
                     lang={deck.language}
                     tag="word"
@@ -405,6 +418,7 @@ export default function ReviewPage() {
                     {deck?.language && (
                       <span className="-mr-8">
                         <PlayButton
+                          ref={playButtonRef}
                           text={card.data.word}
                           lang={deck.language}
                           tag="word"
