@@ -68,6 +68,29 @@ export default function DeckPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deckId]);
 
+  // Keyboard shortcuts: N = 学习 (learning), M = 测验 (test)
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      const target = e.target as HTMLElement;
+      const isInput =
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable;
+      if (isInput) return;
+
+      const key = e.key.toLowerCase();
+      if (key === "n") {
+        e.preventDefault();
+        if (dueCount > 0) router.push(`/deck/${deckId}/review?mode=learning`);
+      } else if (key === "m") {
+        e.preventDefault();
+        if (dueCount > 0) router.push(`/deck/${deckId}/review?mode=test`);
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [deckId, dueCount, router]);
+
   async function loadAgainCardIds() {
     const ids = await getCardIdsWithLastRating(deckId, 1, { withinDays: 7 });
     setAgainCardIds(new Set(ids));
@@ -401,9 +424,11 @@ export default function DeckPage() {
                   ? "bg-blue-600 text-white hover:bg-blue-700"
                   : "cursor-not-allowed bg-gray-300 text-gray-500 dark:bg-gray-600 dark:text-gray-400"
               }`}
+              title="学习 (N)"
             >
               <Play className="h-4 w-4" />
               学习 {dueCount > 0 && `(${dueCount})`}
+              <kbd className="ml-1 rounded border border-current/30 px-1.5 py-0.5 text-xs opacity-80">N</kbd>
             </Link>
             <Link
               href={`/deck/${deckId}/review?mode=test`}
@@ -412,9 +437,11 @@ export default function DeckPage() {
                   ? "bg-purple-600 text-white hover:bg-purple-700"
                   : "cursor-not-allowed bg-gray-300 text-gray-500 dark:bg-gray-600 dark:text-gray-400"
               }`}
+              title="测验 (M)"
             >
               <Play className="h-4 w-4" />
               测验
+              <kbd className="ml-1 rounded border border-current/30 px-1.5 py-0.5 text-xs opacity-80">M</kbd>
             </Link>
             <Link
               href={`/deck/${deckId}/history`}
