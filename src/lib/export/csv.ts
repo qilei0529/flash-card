@@ -13,8 +13,8 @@ function escapeCSVField(field: string): string {
 
 /**
  * Convert cards to CSV format
- * - Word cards: word, translation, pronunciation, partOfSpeech, definition, exampleSentence
- * - Sentence cards: sentence, translation
+ * - Word cards: word, translation, pronunciation, partOfSpeech, definition, exampleSentence, level
+ * - Sentence cards: sentence, translation, level
  */
 export function cardsToCSV(cards: Card[]): string {
   if (cards.length === 0) return "";
@@ -28,13 +28,13 @@ export function cardsToCSV(cards: Card[]): string {
   // Add header
   if (hasWordCards && hasSentenceCards) {
     // Mixed types - use word format (more columns)
-    lines.push("word,translation,pronunciation,partOfSpeech,definition,exampleSentence");
+    lines.push("word,translation,pronunciation,partOfSpeech,definition,exampleSentence,level");
   } else if (hasWordCards) {
     // Only word cards
-    lines.push("word,translation,pronunciation,partOfSpeech,definition,exampleSentence");
+    lines.push("word,translation,pronunciation,partOfSpeech,definition,exampleSentence,level");
   } else {
     // Only sentence cards
-    lines.push("sentence,translation");
+    lines.push("sentence,translation,level");
   }
 
   // Add data rows
@@ -50,6 +50,7 @@ export function cardsToCSV(cards: Card[]): string {
         escapeCSVField(data.partOfSpeech || ""),
         escapeCSVField(data.definition || ""),
         escapeCSVField(data.exampleSentence || ""),
+        escapeCSVField(data.level || ""),
       ];
       lines.push(row.join(","));
     } else if (isSentenceCard(card)) {
@@ -63,13 +64,15 @@ export function cardsToCSV(cards: Card[]): string {
           "", // partOfSpeech
           "", // definition
           "", // exampleSentence
+          "", // level
         ];
         lines.push(row.join(","));
       } else {
-        // Only sentence cards: use sentence format
+        // Only sentence cards: use sentence format (with trailing level column)
         const row = [
           escapeCSVField(data.sentence || ""),
           escapeCSVField(data.translation || ""),
+          "", // level
         ];
         lines.push(row.join(","));
       }

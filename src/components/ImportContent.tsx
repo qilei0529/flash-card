@@ -224,7 +224,7 @@ export function ImportContent() {
         <p className="mb-6 text-gray-500 dark:text-gray-400">
           {format === "words-only"
             ? "Paste words separated by comma, tab, or newline. Cards will be enriched with translation, pronunciation, and more via AI."
-            : "Paste full CSV or Anki plain text. 2 columns = sentence type, 3+ columns = word type."}
+            : "Paste full CSV or Anki plain text. 2 columns = sentence type, 3+ columns = word type. Word CSV can optionally include a trailing CEFR level column (A1–C2)."}
         </p>
 
         {(imported !== null || enriching) && (
@@ -337,7 +337,7 @@ export function ImportContent() {
               placeholder={
                 format === "words-only"
                   ? "apple, banana, orange\n\nor:\napple\nbanana\norange"
-                  : "2 columns: sentence, translation\n3+ columns: word, translation, pronunciation, partOfSpeech, definition, exampleSentence"
+                  : "2 columns: sentence, translation\n3+ columns: word, translation, pronunciation, partOfSpeech, definition, exampleSentence, level (optional)"
               }
               rows={12}
               className="w-full rounded-lg border border-gray-300 px-4 py-3 font-mono text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"

@@ -1,4 +1,9 @@
-import type { CardType, WordCardData, SentenceCardData } from "@/types";
+import type {
+  CardType,
+  WordCardData,
+  SentenceCardData,
+  CefrLevel,
+} from "@/types";
 
 export interface ParsedCard {
   type: CardType;
@@ -21,6 +26,7 @@ export function parseCSV(text: string): ParsedCard[] {
   // Detect header row
   let start = 0;
   let hasHeader = false;
+  let isSentenceHeader = false;
   if (rows.length > 0) {
     const first = rows[0];
     const headerKeywords = [
@@ -33,11 +39,19 @@ export function parseCSV(text: string): ParsedCard[] {
       "partofspeech",
       "definition",
       "examplesentence",
+      "level",
     ];
     const firstRowLower = first.map((c) => c?.toLowerCase() || "");
     hasHeader = firstRowLower.some((cell) =>
       headerKeywords.some((kw) => cell.includes(kw))
     );
+    if (hasHeader) {
+      const firstCell = firstRowLower[0] ?? "";
+      if (firstCell.includes("sentence") && !firstCell.includes("word")) {
+        // Header like "sentence,translation,level" → treat as sentence-based CSV
+        isSentenceHeader = true;
+      }
+    }
     if (hasHeader) start = 1;
   }
 
@@ -47,8 +61,8 @@ export function parseCSV(text: string): ParsedCard[] {
     const colCount = row.length;
 
     if (colCount >= 2) {
-      if (colCount === 2) {
-        // Sentence type: sentence, translation
+      if (isSentenceHeader || colCount === 2) {
+        // Sentence type: sentence, translation (ignore any extra columns like level)
         const sentence = (row[0] ?? "").trim();
         const translation = (row[1] ?? "").trim();
         if (sentence || translation) {
@@ -68,6 +82,14 @@ export function parseCSV(text: string): ParsedCard[] {
         const partOfSpeech = (row[3] ?? "").trim() || undefined;
         const definition = (row[4] ?? "").trim() || undefined;
         const exampleSentence = (row[5] ?? "").trim() || undefined;
+        let level: CefrLevel | undefined;
+        if (colCount >= 7) {
+          const rawLevel = (row[6] ?? "").trim().toUpperCase();
+          const validLevels: CefrLevel[] = ["A1", "A2", "B1", "B2", "C1", "C2"];
+          if (validLevels.includes(rawLevel as CefrLevel)) {
+            level = rawLevel as CefrLevel;
+          }
+        }
 
         if (word || translation) {
           cards.push({
@@ -79,6 +101,7 @@ export function parseCSV(text: string): ParsedCard[] {
               partOfSpeech,
               definition,
               exampleSentence,
+              level,
             },
           });
         }
