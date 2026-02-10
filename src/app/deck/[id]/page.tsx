@@ -18,6 +18,7 @@ import {
   Wand2,
   ClipboardList,
   ChevronDown,
+  Gauge,
 } from "lucide-react";
 import { db } from "@/lib/db";
 import {
@@ -33,7 +34,14 @@ import {
   findCardsWithEmptyTranslation,
 } from "@/lib/card";
 import { updateDeckSettings } from "@/lib/deck";
-import type { Deck, Card, CardType, WordCardData, SentenceCardData } from "@/types";
+import type {
+  Deck,
+  Card,
+  CardType,
+  WordCardData,
+  SentenceCardData,
+  CefrLevel,
+} from "@/types";
 import { CardForm } from "@/components/CardForm";
 import { cardsToCSV, downloadCSV } from "@/lib/export/csv";
 import { getCardIdsWithLastRating } from "@/lib/review";
@@ -59,6 +67,12 @@ export default function DeckPage() {
   const [cleaning, setCleaning] = useState(false);
   const [actionsOpen, setActionsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [levelFilter, setLevelFilter] = useState<"all" | CefrLevel>("all");
+  const [levelFilling, setLevelFilling] = useState(false);
+  const [levelProgress, setLevelProgress] = useState<{ done: number; total: number }>({
+    done: 0,
+    total: 0,
+  });
 
   useEffect(() => {
     loadDeck();
@@ -120,6 +134,11 @@ export default function DeckPage() {
     if (lastRatingFilter === "again") {
       if (againCardIds === null) return true; // show all until loaded
       if (!againCardIds.has(card.id)) return false;
+    }
+    if (levelFilter !== "all") {
+      if (!isWordCard(card)) return false;
+      const lvl = card.data.level;
+      if (!lvl || lvl !== levelFilter) return false;
     }
     if (q) {
       const word = isWordCard(card) ? (card.data.word ?? "").toLowerCase() : "";
@@ -307,7 +326,108 @@ export default function DeckPage() {
     alert(items);
   }
 
+  async function fetchWordLevel(
+    word: string,
+    sourceLang: string
+  ): Promise<CefrLevel | null> {
+    try {
+      const res = await fetch("/api/word-level", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ word, sourceLang }),
+      });
+
+      if (!res.ok) {
+        // If API key missing or other server issue, surface once to the user
+        if (res.status === 503 || res.status === 500) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || `Word level API failed: ${res.status}`);
+        }
+        console.warn("Word level request failed for", word, res.status);
+        return null;
+      }
+
+      const data = await res.json();
+      const rawLevel = typeof data.level === "string" ? data.level.toUpperCase() : "";
+      const validLevels: CefrLevel[] = ["A1", "A2", "B1", "B2", "C1", "C2"];
+      return validLevels.includes(rawLevel as CefrLevel)
+        ? (rawLevel as CefrLevel)
+        : null;
+    } catch (error) {
+      console.error("fetchWordLevel error:", error);
+      throw error;
+    }
+  }
+
+  async function handleFillLevels() {
+    if (!deck || levelFilling) return;
+
+    const targetCards = cards.filter(
+      (card) => isWordCard(card) && !card.data.level
+    );
+
+    if (targetCards.length === 0) {
+      alert("没有需要补充难度的单词卡片");
+      return;
+    }
+
+    const confirmed = confirm(
+      `将为 ${targetCards.length} 张单词卡片补充难度等级（A1-C2），可能会消耗 OpenAI 调用额度，是否继续？`
+    );
+    if (!confirmed) return;
+
+    setLevelFilling(true);
+    setLevelProgress({ done: 0, total: targetCards.length });
+
+    const sourceLang = deck.language || "English";
+    const maxConcurrency = 10;
+    let completed = 0;
+    let index = 0;
+
+    const worker = async () => {
+      while (true) {
+        const currentIndex = index++;
+        if (currentIndex >= targetCards.length) break;
+
+        const card = targetCards[currentIndex];
+        try {
+          const level = await fetchWordLevel(card.data.word, sourceLang);
+          if (level) {
+            await updateCard(card.id, {
+              type: "word",
+              data: { ...card.data, level },
+            });
+          }
+        } catch (error) {
+          // Already logged inside fetchWordLevel; continue with next card
+        } finally {
+          completed += 1;
+          setLevelProgress({ done: completed, total: targetCards.length });
+        }
+      }
+    };
+
+    try {
+      const workerCount = Math.min(maxConcurrency, targetCards.length);
+      await Promise.all(Array.from({ length: workerCount }, () => worker()));
+      alert("难度补充完成");
+      await loadCards();
+    } catch (error) {
+      alert(
+        "补充过程中发生错误：" +
+          (error instanceof Error ? error.message : String(error))
+      );
+    } finally {
+      setLevelFilling(false);
+    }
+  }
+
   if (!deck) return null;
+
+  const levelPercent =
+    levelProgress.total > 0
+      ? Math.min(100, (levelProgress.done / levelProgress.total) * 100)
+      : 0;
 
   return (
     <main className="min-h-screen p-6 sm:p-8">
@@ -411,6 +531,23 @@ export default function DeckPage() {
                   取消
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {levelFilling && (
+          <div className="mb-4">
+            <div className="mb-1 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+              <span>正在补充难度（A1-C2）</span>
+              <span>
+                {levelProgress.done} / {levelProgress.total}
+              </span>
+            </div>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+              <div
+                className="h-full bg-blue-600 transition-all duration-300"
+                style={{ width: `${levelPercent}%` }}
+              />
             </div>
           </div>
         )}
@@ -523,6 +660,18 @@ export default function DeckPage() {
                     <ClipboardList className="h-4 w-4" />
                     提取空翻译
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActionsOpen(false);
+                      handleFillLevels();
+                    }}
+                    disabled={levelFilling}
+                    className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-gray-700"
+                  >
+                    <Gauge className="h-4 w-4" />
+                    {levelFilling ? "补充中..." : "补充难度 (A1-C2)"}
+                  </button>
                 </div>
               </>
             )}
@@ -622,6 +771,25 @@ export default function DeckPage() {
                   Again({againCardIds?.size ?? "..."})
                 </option>
               </select>
+              <select
+                value={levelFilter}
+                onChange={(e) =>
+                  setLevelFilter(
+                    e.target.value === "all"
+                      ? "all"
+                      : (e.target.value as CefrLevel)
+                  )
+                }
+                className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white w-[120px]"
+              >
+                <option value="all">全部难度</option>
+                <option value="A1">A1</option>
+                <option value="A2">A2</option>
+                <option value="B1">B1</option>
+                <option value="B2">B2</option>
+                <option value="C1">C1</option>
+                <option value="C2">C2</option>
+              </select>
             </div>
           </div>
           {cards.length === 0 ? (
@@ -659,6 +827,11 @@ export default function DeckPage() {
                         </span>
                       );
                     })()}
+                    {isWordCard(card) && card.data.level && (
+                      <span className="rounded bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-900/40 dark:text-purple-200">
+                        {card.data.level}
+                      </span>
+                    )}
                   </div>
                   {isWordCard(card) ? (
                     <>
