@@ -537,14 +537,36 @@ export default function DeckPage() {
         )}
 
         {editingCard && (
-          <CardForm
-            initialCard={editingCard}
-            onSubmit={(type, data) =>
-              handleUpdateCard(editingCard.id, type, data)
-            }
-            onCancel={() => setEditingCard(null)}
-            onDelete={() => handleDeleteCard(editingCard.id)}
-          />
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="edit-card-title"
+          >
+            <div
+              className="absolute inset-0 bg-black/10 dark:bg-black/60"
+              aria-hidden="true"
+              onClick={() => setEditingCard(null)}
+            />
+            <div className="relative z-10 flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+              <h2
+                id="edit-card-title"
+                className="flex-shrink-0 border-b border-gray-100 px-5 pt-3 pb-2 text-md font-semibold dark:border-gray-700"
+              >
+                编辑卡片
+              </h2>
+              <CardForm
+                initialCard={editingCard}
+                onSubmit={(type, data) =>
+                  handleUpdateCard(editingCard.id, type, data)
+                }
+                onCancel={() => setEditingCard(null)}
+                onDelete={() => handleDeleteCard(editingCard.id)}
+                sourceLang={deck.language || "English"}
+                stickyActions
+              />
+            </div>
+          </div>
         )}
 
         <div className="space-y-3">
