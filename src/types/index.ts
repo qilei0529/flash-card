@@ -1,3 +1,5 @@
+export type CefrLevel = "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
+
 export interface Deck {
   id: string;
   name: string;
@@ -17,6 +19,7 @@ export interface WordCardData {
   partOfSpeech?: string; // 词性 (noun, verb, adj 等)
   definition?: string; // 详细释义
   exampleSentence?: string; // 例句
+  level?: CefrLevel; // 难度等级（A1-C2，可选）
 }
 
 export interface SentenceCardData {

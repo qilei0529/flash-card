@@ -76,14 +76,15 @@ export function CardForm({
       const { results } = await res.json();
       const first = Array.isArray(results) ? results[0] : null;
       if (first && first.word) {
-        setWordData({
+        setWordData((prev) => ({
+          ...prev,
           word: first.word,
-          translation: first.translation ?? wordData.translation,
-          pronunciation: first.pronunciation ?? wordData.pronunciation,
-          partOfSpeech: first.partOfSpeech ?? wordData.partOfSpeech,
-          definition: first.definition ?? wordData.definition,
-          exampleSentence: first.exampleSentence ?? wordData.exampleSentence,
-        });
+          translation: first.translation ?? prev.translation,
+          pronunciation: first.pronunciation ?? prev.pronunciation,
+          partOfSpeech: first.partOfSpeech ?? prev.partOfSpeech,
+          definition: first.definition ?? prev.definition,
+          exampleSentence: first.exampleSentence ?? prev.exampleSentence,
+        }));
       }
     } catch (e) {
       alert(e instanceof Error ? e.message : "Failed to fetch word data");
@@ -96,14 +97,16 @@ export function CardForm({
     e.preventDefault();
     if (type === "word") {
       if (!wordData.word.trim() || !wordData.translation.trim()) return;
-      onSubmit(type, {
+      const payload: WordCardData = {
         word: wordData.word.trim(),
         translation: wordData.translation.trim(),
         pronunciation: wordData.pronunciation?.trim() || undefined,
         partOfSpeech: wordData.partOfSpeech?.trim() || undefined,
         definition: wordData.definition?.trim() || undefined,
         exampleSentence: wordData.exampleSentence?.trim() || undefined,
-      });
+        level: wordData.level,
+      };
+      onSubmit(type, payload);
     } else {
       if (!sentenceData.sentence.trim() || !sentenceData.translation.trim())
         return;
