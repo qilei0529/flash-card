@@ -60,6 +60,14 @@ export default function DeckPage() {
   const [deckName, setDeckName] = useState<string>("");
   const [cardsPerSession, setCardsPerSession] = useState<number>(30);
   const [language, setLanguage] = useState<string>("");
+  const [selectedLevels, setSelectedLevels] = useState<CefrLevel[]>([
+    "A1",
+    "A2",
+    "B1",
+    "B2",
+    "C1",
+    "C2",
+  ]);
   const [savingSettings, setSavingSettings] = useState(false);
   const [proficiencyFilter, setProficiencyFilter] = useState<number | "all">("all");
   const [lastRatingFilter, setLastRatingFilter] = useState<"all" | "again">("all");
@@ -120,6 +128,11 @@ export default function DeckPage() {
     setDeckName(d.name);
     setCardsPerSession(d.cardsPerSession || 30);
     setLanguage(d.language || "");
+    if (Array.isArray(d.levels) && d.levels.length > 0) {
+      setSelectedLevels(d.levels);
+    } else {
+      setSelectedLevels(["A1", "A2", "B1", "B2", "C1", "C2"]);
+    }
   }
 
   async function loadCards() {
@@ -281,6 +294,7 @@ export default function DeckPage() {
         name: deckName.trim(),
         cardsPerSession: cardsPerSession,
         language: language || undefined,
+        levels: selectedLevels.length ? selectedLevels : undefined,
       });
       await loadDeck();
       setShowSettings(false);
@@ -530,6 +544,41 @@ export default function DeckPage() {
                   设置语言后，单词卡片会显示播放按钮用于播放发音
                 </p>
               </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium">
+                  难度（CEFR）
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {(["A1", "A2", "B1", "B2", "C1", "C2"] as CefrLevel[]).map(
+                    (lvl) => {
+                      const checked = selectedLevels.includes(lvl);
+                      return (
+                        <label
+                          key={lvl}
+                          className="inline-flex items-center gap-1 rounded-md border border-gray-300 px-2 py-1 text-xs dark:border-gray-600"
+                        >
+                          <input
+                            type="checkbox"
+                            className="h-3 w-3 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600"
+                            checked={checked}
+                            onChange={() => {
+                              setSelectedLevels((prev) =>
+                                prev.includes(lvl)
+                                  ? prev.filter((x) => x !== lvl)
+                                  : [...prev, lvl]
+                              );
+                            }}
+                          />
+                          <span>{lvl}</span>
+                        </label>
+                      );
+                    }
+                  )}
+                </div>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  仅当设置了难度时，复习和测验会优先从选中的难度中选择单词；若全不勾选则视为不限难度。
+                </p>
+              </div>
               <div className="flex gap-3">
                 <button
                   onClick={handleSaveSettings}
@@ -544,6 +593,11 @@ export default function DeckPage() {
                     setDeckName(deck.name);
                     setCardsPerSession(deck.cardsPerSession || 30);
                     setLanguage(deck.language || "");
+                    if (Array.isArray(deck.levels) && deck.levels.length > 0) {
+                      setSelectedLevels(deck.levels);
+                    } else {
+                      setSelectedLevels(["A1", "A2", "B1", "B2", "C1", "C2"]);
+                    }
                   }}
                   className="rounded-lg border border-gray-300 px-4 py-2 dark:border-gray-600"
                 >

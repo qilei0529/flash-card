@@ -47,7 +47,12 @@ export async function updateDeck(
 
 export async function updateDeckSettings(
   id: string,
-  settings: { name?: string; cardsPerSession?: number; language?: string }
+  settings: {
+    name?: string;
+    cardsPerSession?: number;
+    language?: string;
+    levels?: Deck["levels"];
+  }
 ): Promise<void> {
   const deck = await db.decks.get(id);
   if (!deck) return;
@@ -62,6 +67,9 @@ export async function updateDeckSettings(
   }
   if (settings.language !== undefined) {
     updateData.language = settings.language;
+  }
+  if (settings.levels !== undefined) {
+    updateData.levels = settings.levels;
   }
   await db.decks.update(id, updateData);
 }

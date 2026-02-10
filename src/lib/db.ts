@@ -81,6 +81,16 @@ export class FlashCardDB extends Dexie {
       .upgrade(async (tx) => {
         // Add sessions table (no migration needed for existing data)
       });
+    this.version(6)
+      .stores({
+        decks: "id, createdAt, updatedAt",
+        cards: "id, deckId, due, createdAt, updatedAt",
+        reviewRecords: "id, cardId, reviewedAt, [cardId+reviewedAt]",
+        sessions: "id, deckId, createdAt, [deckId+createdAt]",
+      })
+      .upgrade(async () => {
+        // Add optional levels field on Deck (no migration needed)
+      });
   }
 }
 

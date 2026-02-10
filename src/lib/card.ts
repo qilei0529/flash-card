@@ -5,6 +5,7 @@ import type {
   CardType,
   WordCardData,
   SentenceCardData,
+  CefrLevel,
 } from "@/types";
 
 function generateId() {
@@ -115,18 +116,32 @@ function weightedRandomSelect<T>(
 
 export async function getDueCardsForSession(
   deckId: string,
-  limit: number = 30
+  limit: number = 30,
+  levels?: CefrLevel[]
 ): Promise<Card[]> {
   const allDueCards = await getDueCards(deckId);
-  
-  if (allDueCards.length === 0) return [];
-  if (allDueCards.length <= limit) return shuffleArray(allDueCards);
+
+  let eligible = allDueCards;
+  if (Array.isArray(levels) && levels.length > 0) {
+    eligible = allDueCards.filter((card) => {
+      if (isWordCard(card)) {
+        const lvl = card.data.level;
+        if (!lvl) return false;
+        return levels.includes(lvl);
+      }
+      // Sentence cards are not affected by level selection
+      return true;
+    });
+  }
+
+  if (eligible.length === 0) return [];
+  if (eligible.length <= limit) return shuffleArray(eligible);
 
   // Calculate proficiency scores (weights) for each card
-  const weights = allDueCards.map((card) => calculateProficiencyScore(card));
+  const weights = eligible.map((card) => calculateProficiencyScore(card));
 
   // Use weighted random selection to prioritize less proficient cards
-  const selected = weightedRandomSelect(allDueCards, weights, limit);
+  const selected = weightedRandomSelect(eligible, weights, limit);
 
   // Shuffle the selected cards for variety
   return shuffleArray(selected);

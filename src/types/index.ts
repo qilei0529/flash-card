@@ -8,6 +8,7 @@ export interface Deck {
   deletedAt?: string | null;
   cardsPerSession?: number; // Default: 30, number of cards to show per session
   language?: string; // Language for TTS (e.g., "French", "English", "German")
+  levels?: CefrLevel[]; // Preferred difficulty levels for this deck
 }
 
 export type CardType = 'word' | 'sentence';

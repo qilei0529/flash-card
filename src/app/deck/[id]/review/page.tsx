@@ -153,7 +153,7 @@ export default function ReviewPage() {
 
     // No sessionId or session invalid - create new session
     const limit = d.cardsPerSession || 30;
-    const due = await getDueCardsForSession(deckId, limit);
+    const due = await getDueCardsForSession(deckId, limit, d.levels);
     
     if (due.length === 0) {
       setCards([]);
@@ -178,7 +178,7 @@ export default function ReviewPage() {
   async function loadCards() {
     if (!deck) return;
     const limit = deck.cardsPerSession || 30;
-    const due = await getDueCardsForSession(deckId, limit);
+    const due = await getDueCardsForSession(deckId, limit, deck.levels);
     setCards(due);
     setIndex(0);
     setRevealStage("front");
@@ -322,12 +322,19 @@ export default function ReviewPage() {
           {/* Front */}
           {revealStage === "front" && (
             <div className="text-center w-full">
-              <div className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                {mode === "learning"
-                  ? isWord
-                    ? "单词"
-                    : "句子"
-                  : "翻译"}
+              <div className="mb-2 flex items-center justify-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                <span>
+                  {mode === "learning"
+                    ? isWord
+                      ? "单词"
+                      : "句子"
+                    : "翻译"}
+                </span>
+                {isWordCard(card) && card.data.level && (
+                  <span className="rounded bg-purple-100 px-2 py-0.5 text-[10px] font-semibold text-purple-800 dark:bg-purple-900/40 dark:text-purple-200 -mr-8">
+                    {card.data.level}
+                  </span>
+                )}
               </div>
               <p className="whitespace-pre-wrap text-3xl leading-relaxed">
                 {mode === "learning"
@@ -367,12 +374,19 @@ export default function ReviewPage() {
             revealStage === "details" ||
             revealStage === "rating") && (
             <div className="text-center w-full">
-              <div className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                {mode === "learning"
-                  ? isWord
-                    ? "单词"
-                    : "句子"
-                  : "翻译"}
+              <div className="mb-2 flex items-center justify-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                <span>
+                  {mode === "learning"
+                    ? isWord
+                      ? "单词"
+                      : "句子"
+                    : "翻译"}
+                </span>
+                {isWordCard(card) && card.data.level && (
+                  <span className="rounded bg-purple-100 px-2 py-0.5 text-[10px] font-semibold text-purple-800 dark:bg-purple-900/40 dark:text-purple-200 -mr-8">
+                    {card.data.level}
+                  </span>
+                )}
               </div>
               <p className={`whitespace-pre-wrap text-3xl leading-relaxed ${mode === "learning" && isWordCard(card) && card.data.pronunciation ? "mb-2" : "mb-4"}`}>
                 {mode === "learning"
