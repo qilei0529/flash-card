@@ -159,6 +159,22 @@ export default function DeckPage() {
     relearning: cards.filter((c) => c.state === 3).length,
   };
 
+  const levelCounts: Record<CefrLevel, number> = {
+    A1: cards.filter((c) => isWordCard(c) && c.data.level === "A1").length,
+    A2: cards.filter((c) => isWordCard(c) && c.data.level === "A2").length,
+    B1: cards.filter((c) => isWordCard(c) && c.data.level === "B1").length,
+    B2: cards.filter((c) => isWordCard(c) && c.data.level === "B2").length,
+    C1: cards.filter((c) => isWordCard(c) && c.data.level === "C1").length,
+    C2: cards.filter((c) => isWordCard(c) && c.data.level === "C2").length,
+  };
+  const totalWithLevel =
+    levelCounts.A1 +
+    levelCounts.A2 +
+    levelCounts.B1 +
+    levelCounts.B2 +
+    levelCounts.C1 +
+    levelCounts.C2;
+
   function getProficiencyLabel(state: number | "all"): string {
     if (state === "all") return "全部";
     switch (state) {
@@ -391,7 +407,10 @@ export default function DeckPage() {
 
         const card = targetCards[currentIndex];
         try {
-          const level = await fetchWordLevel(card.data.word, sourceLang);
+          const level = await fetchWordLevel(
+            isWordCard(card) ? card.data.word : "",
+            sourceLang
+          );
           if (level) {
             await updateCard(card.id, {
               type: "word",
@@ -782,13 +801,29 @@ export default function DeckPage() {
                 }
                 className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white w-[120px]"
               >
-                <option value="all">全部难度</option>
-                <option value="A1">A1</option>
-                <option value="A2">A2</option>
-                <option value="B1">B1</option>
-                <option value="B2">B2</option>
-                <option value="C1">C1</option>
-                <option value="C2">C2</option>
+                <option value="all">
+                  {totalWithLevel > 0
+                    ? `全部难度 (${totalWithLevel})`
+                    : "全部难度"}
+                </option>
+                <option value="A1">
+                  {levelCounts.A1 > 0 ? `A1 (${levelCounts.A1})` : "A1"}
+                </option>
+                <option value="A2">
+                  {levelCounts.A2 > 0 ? `A2 (${levelCounts.A2})` : "A2"}
+                </option>
+                <option value="B1">
+                  {levelCounts.B1 > 0 ? `B1 (${levelCounts.B1})` : "B1"}
+                </option>
+                <option value="B2">
+                  {levelCounts.B2 > 0 ? `B2 (${levelCounts.B2})` : "B2"}
+                </option>
+                <option value="C1">
+                  {levelCounts.C1 > 0 ? `C1 (${levelCounts.C1})` : "C1"}
+                </option>
+                <option value="C2">
+                  {levelCounts.C2 > 0 ? `C2 (${levelCounts.C2})` : "C2"}
+                </option>
               </select>
             </div>
           </div>
