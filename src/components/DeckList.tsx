@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus, FolderOpen, Trash2, Pencil } from "lucide-react";
 import { getDecks, createDeck, updateDeck, deleteDeck } from "@/lib/deck";
+import { ensureDemoDeck } from "@/lib/demoDeck";
 import type { Deck } from "@/types";
 import { db } from "@/lib/db";
 
@@ -13,7 +14,11 @@ export function DeckList() {
   const [showForm, setShowForm] = useState(false);
 
   async function loadDecks() {
-    const list = await getDecks();
+    let list = await getDecks();
+    if (list.length === 0) {
+      await ensureDemoDeck();
+      list = await getDecks();
+    }
     setDecks(list);
   }
 
