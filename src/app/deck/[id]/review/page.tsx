@@ -40,7 +40,8 @@ export default function ReviewPage() {
   const [deck, setDeck] = useState<Deck | null>(null);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(sessionId);
   const [sessionCompleted, setSessionCompleted] = useState(false);
-  const playButtonRef = useRef<PlayButtonHandle>(null);
+  const playButtonRef1 = useRef<PlayButtonHandle>(null);
+  const playButtonRef2 = useRef<PlayButtonHandle>(null);
 
   useEffect(() => {
     loadDeckAndCards();
@@ -80,6 +81,24 @@ export default function ReviewPage() {
         }
         return;
       }
+      if (key === "h") {
+        e.preventDefault();
+        const card = cards[index];
+        if (card && deck?.language) {
+          if (isWordCard(card)) {
+            playButtonRef1.current?.play() ?? playButtonRef2.current?.play();
+          } else if (isSentenceCard(card)) {
+            const text = card.data.sentence;
+            if (text) {
+              getAudioUrl(text, deck.language, "sentence").then((url) => {
+                const audio = new Audio(url);
+                audio.play().catch(() => {});
+              });
+            }
+          }
+        }
+        return;
+      }
       if (revealStage === "rating") {
         if (key === "u") {
           e.preventDefault();
@@ -95,23 +114,6 @@ export default function ReviewPage() {
           handleRate(4);
         }
         return;
-      }
-      if (key === "h") {
-        e.preventDefault();
-        const card = cards[index];
-        if (!card || !deck?.language) return;
-        if (isWordCard(card)) {
-          playButtonRef.current?.play();
-          return;
-        }
-        if (isSentenceCard(card)) {
-          const text = card.data.sentence;
-          if (!text) return;
-          getAudioUrl(text, deck.language, "sentence").then((url) => {
-            const audio = new Audio(url);
-            audio.play().catch(() => {});
-          });
-        }
       }
     }
     window.addEventListener("keydown", handleKeyDown);
@@ -344,7 +346,7 @@ export default function ReviewPage() {
                   {deck?.language && (
                   <span className="-mr-8">
                   <PlayButton
-                    ref={playButtonRef}
+                    ref={playButtonRef1}
                     text={card.data.word}
                     lang={deck.language}
                     tag="word"
@@ -389,7 +391,7 @@ export default function ReviewPage() {
                 {deck?.language && (
                   <span className="-mr-8">
                   <PlayButton
-                    ref={playButtonRef}
+                    ref={playButtonRef1}
                     text={card.data.word}
                     lang={deck.language}
                     tag="word"
@@ -418,7 +420,7 @@ export default function ReviewPage() {
                     {deck?.language && (
                       <span className="-mr-8">
                         <PlayButton
-                          ref={playButtonRef}
+                          ref={playButtonRef2}
                           text={card.data.word}
                           lang={deck.language}
                           tag="word"
