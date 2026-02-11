@@ -292,10 +292,12 @@ export default function ReviewPage() {
           <div className="flex flex-row items-center gap-2">
             <Link
               href={`/deck/${deckId}`}
-              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white mr-4"
             >
+              <button type="button" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white mr-4">
               <ArrowLeft className="h-4 w-4" />
-              Exit review
+              Back
+              </button>
             </Link>
             <span
               className={`rounded-full px-3 py-1 text-xs font-medium ${mode === "learning"

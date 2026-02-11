@@ -201,8 +201,8 @@ export function LearningCardView({
           </p>
         </div>)}
       {/* Hint */}
-      <div className="mt-4 h-5 flex items-center justify-center">
         {revealStage === "front" && (
+      <div className="mt-4 h-5 flex items-center justify-center">
           <p className="text-sm text-gray-400 text-center">
             点击或按{" "}
             <kbd className="rounded bg-gray-200 px-1.5 py-0.5 font-mono text-xs dark:bg-gray-600">
@@ -215,8 +215,10 @@ export function LearningCardView({
             </kbd>{" "}
             播放
           </p>
+          </div>
         )}
         {revealStage === "sentence" && (
+      <div className="mt-4 h-5 flex items-center justify-center">
           <p className="text-sm text-gray-400 text-center">
             点击或按{" "}
             <kbd className="rounded bg-gray-200 px-1.5 py-0.5 font-mono text-xs dark:bg-gray-600">
@@ -228,8 +230,8 @@ export function LearningCardView({
             </kbd>{" "}
             播放
           </p>
+          </div>
         )}
-      </div>
     </>
   );
 }
