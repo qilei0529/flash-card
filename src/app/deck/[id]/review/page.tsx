@@ -298,8 +298,8 @@ export default function ReviewPage() {
             </Link>
             <span
               className={`rounded-full px-3 py-1 text-xs font-medium ${mode === "learning"
-                  ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200"
-                  : "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200"
+                ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200"
+                : "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200"
                 }`}
             >
               {mode === "learning" ? "学习模式" : "测验模式"}
@@ -411,13 +411,15 @@ export default function ReviewPage() {
                   </div>
                 )}
                 {card.data.exampleSentence && (
-                  <div className="mt-4 border-t border-gray-200 pt-1 dark:border-gray-700">
+                  <div className="mt-4 dark:border-gray-700">
                     <div className=" hidden mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
                       例句
                     </div>
                     <p className="whitespace-pre-wrap text-ms text-gray-700 dark:text-gray-300">
                       {card.data.exampleSentence}
                     </p>
+
+                    <div className="border-t border-gray-200 pt-4 dark:border-gray-700"></div>
                   </div>
                 )}
                 <div className="mt-4 h-5 flex items-center justify-center">
