@@ -176,6 +176,7 @@ export function ImportContent() {
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+    setFormat("full-csv");
     const reader = new FileReader();
     reader.onload = () => {
       setText(String(reader.result ?? ""));
