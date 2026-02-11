@@ -22,7 +22,7 @@ import { PlayButton, type PlayButtonHandle } from "@/components/PlayButton";
 import { getAudioUrl } from "@/lib/audioCache";
 import type { Card, Deck } from "@/types";
 
-type RevealStage = "front" | "translation" | "details" | "rating";
+type RevealStage = "front" | "sentence" | "translation" | "details" | "rating";
 type StudyMode = "learning" | "test";
 
 export default function ReviewPage() {
@@ -92,7 +92,7 @@ export default function ReviewPage() {
             if (text) {
               getAudioUrl(text, deck.language, "sentence").then((url) => {
                 const audio = new Audio(url);
-                audio.play().catch(() => {});
+                audio.play().catch(() => { });
               });
             }
           }
@@ -154,7 +154,7 @@ export default function ReviewPage() {
     // No sessionId or session invalid - create new session
     const limit = d.cardsPerSession || 30;
     const due = await getDueCardsForSession(deckId, limit, d.levels);
-    
+
     if (due.length === 0) {
       setCards([]);
       setLoading(false);
@@ -164,7 +164,7 @@ export default function ReviewPage() {
     // Create new session with selected cards
     const cardIds = due.map((card) => card.id);
     const session = await createSession(deckId, mode, cardIds);
-    
+
     // Redirect to same URL with sessionId
     const newUrl = `/deck/${deckId}/review?mode=${mode}&sessionId=${session.id}`;
     router.replace(newUrl);
@@ -189,7 +189,12 @@ export default function ReviewPage() {
     if (!card) return;
 
     if (revealStage === "front") {
-      // 一次点击：直接显示翻译 + 评分按钮
+      if (mode === "learning" && isWordCard(card)) {
+        setRevealStage(card.data.exampleSentence ? "sentence" : "rating");
+      } else {
+        setRevealStage("rating");
+      }
+    } else if (revealStage === "sentence") {
       setRevealStage("rating");
     } else if (revealStage === "translation" || revealStage === "details") {
       setRevealStage("rating");
@@ -201,12 +206,12 @@ export default function ReviewPage() {
     if (!card) return;
 
     await recordReview(card.id, rating);
-    
+
     // Update session progress
     if (currentSessionId) {
       await incrementSessionProgress(currentSessionId);
     }
-    
+
     setRevealStage("front");
 
     if (index < cards.length - 1) {
@@ -281,24 +286,25 @@ export default function ReviewPage() {
   return (
     <main className="flex min-h-screen flex-col p-6 sm:p-8">
       <div className="mx-auto w-full max-w-2xl flex-1 flex flex-col">
-        <Link
-          href={`/deck/${deckId}`}
-          className="mb-6 inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Exit review
-        </Link>
 
         <div className="mb-4 flex items-center justify-between">
-          <span
-            className={`rounded-full px-3 py-1 text-xs font-medium ${
-              mode === "learning"
-                ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200"
-                : "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200"
-            }`}
-          >
-            {mode === "learning" ? "学习模式" : "测验模式"}
-          </span>
+          <div className="flex flex-row items-center gap-2">
+            <Link
+              href={`/deck/${deckId}`}
+              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Exit review
+            </Link>
+            <span
+              className={`rounded-full px-3 py-1 text-xs font-medium ${mode === "learning"
+                  ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200"
+                  : "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200"
+                }`}
+            >
+              {mode === "learning" ? "学习模式" : "测验模式"}
+            </span>
+          </div>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             {index + 1} of {cards.length}
           </p>
@@ -306,17 +312,15 @@ export default function ReviewPage() {
 
         <div className="mb-6 h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
           <div
-            className={`h-full transition-all duration-300 ${
-              mode === "learning" ? "bg-blue-600" : "bg-purple-600"
-            }`}
+            className={`h-full transition-all duration-300 ${mode === "learning" ? "bg-blue-600" : "bg-purple-600"
+              }`}
             style={{ width: `${progress}%` }}
           />
         </div>
 
         <div
-          className={`flex-1 w-full max-w-[360px] min-h-[280px] max-h-[280px] mx-auto select-none rounded-2xl border-2 border-gray-200 bg-white p-8 pt-4 pb-4 shadow-lg dark:border-gray-700 dark:bg-gray-800 flex flex-col items-center justify-center ${
-            revealStage !== "rating" ? "cursor-pointer" : ""
-          }`}
+          className={`flex-1 w-full max-w-[360px] min-h-[280px] mx-auto select-none rounded-2xl border-2 border-gray-200 bg-white p-8 pt-4 pb-4 shadow-lg dark:border-gray-700 dark:bg-gray-800 flex flex-col items-center justify-center ${revealStage === "rating" ? "max-h-[420px] overflow-y-auto" : "max-h-[280px]"
+            } ${revealStage !== "rating" ? "cursor-pointer" : ""}`}
           onClick={revealStage !== "rating" ? handleCardClick : undefined}
         >
           {/* Front */}
@@ -351,82 +355,45 @@ export default function ReviewPage() {
                     {card.data.pronunciation}
                   </p>
                   {deck?.language && (
-                  <span className="-mr-8">
-                  <PlayButton
-                    ref={playButtonRef1}
-                    text={card.data.word}
-                    lang={deck.language}
-                    tag="word"
-                  /></span>
+                    <span className="-mr-8">
+                      <PlayButton
+                        ref={playButtonRef1}
+                        text={card.data.word}
+                        lang={deck.language}
+                        tag="word"
+                      /></span>
                   )}
                 </div>
               )}
               <div className="mt-4 h-5 flex items-center justify-center">
                 <p className="text-sm text-gray-400">
-                  {mode === "learning" ? "点击显示翻译" : "点击显示答案"}
+                  {mode === "learning"
+                    ? isWordCard(card)
+                      ? "点击显示例句"
+                      : "点击显示翻译"
+                    : "点击显示答案"}
                 </p>
               </div>
             </div>
           )}
 
-          {/* Translation/Answer */}
-          {(revealStage === "translation" ||
-            revealStage === "details" ||
-            revealStage === "rating") && (
-            <div className="text-center w-full">
-              <div className="mb-2 flex items-center justify-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                <span>
-                  {mode === "learning"
-                    ? isWord
-                      ? "单词"
-                      : "句子"
-                    : "翻译"}
-                </span>
-                {isWordCard(card) && card.data.level && (
-                  <span className="rounded bg-purple-100 px-2 py-0.5 text-[10px] font-semibold text-purple-800 dark:bg-purple-900/40 dark:text-purple-200 -mr-8">
-                    {card.data.level}
-                  </span>
-                )}
-              </div>
-              <p className={`whitespace-pre-wrap text-3xl leading-relaxed ${mode === "learning" && isWordCard(card) && card.data.pronunciation ? "mb-2" : "mb-4"}`}>
-                {mode === "learning"
-                  ? isWordCard(card)
-                    ? card.data.word
-                    : isSentenceCard(card)
-                      ? card.data.sentence
-                      : ""
-                  : card.data.translation}
-              </p>
-              {mode === "learning" && isWordCard(card) && card.data.pronunciation && (
-                <div className="mb-4 flex items-center justify-center gap-2">
-                  <p className="text-xl text-gray-400 dark:text-gray-500">
-                    {card.data.pronunciation}
-                  </p>
-                {deck?.language && (
-                  <span className="-mr-8">
-                  <PlayButton
-                    ref={playButtonRef1}
-                    text={card.data.word}
-                    lang={deck.language}
-                    tag="word"
-                  /></span>
-                )}
+          {/* Sentence stage (learning mode, word card only): word + 读音 + 例句 */}
+          {revealStage === "sentence" &&
+            mode === "learning" &&
+            isWordCard(card) && (
+              <div className="text-center w-full">
+                <div className="mb-2 flex items-center justify-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                  <span>单词</span>
+                  {card.data.level && (
+                    <span className="rounded bg-purple-100 px-2 py-0.5 text-[10px] font-semibold text-purple-800 dark:bg-purple-900/40 dark:text-purple-200 -mr-8">
+                      {card.data.level}
+                    </span>
+                  )}
                 </div>
-              )}
-              <div className="border-t border-gray-200 pt-4 dark:border-gray-700">
-                <div className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  {mode === "learning" ? "翻译" : "答案"}
-                </div>
-                <p className={`whitespace-pre-wrap text-2xl text-gray-700 dark:text-gray-300 ${mode === "test" && isWordCard(card) && card.data.pronunciation ? "mb-2" : ""}`}>
-                  {mode === "learning"
-                    ? card.data.translation
-                    : isWordCard(card)
-                      ? card.data.word
-                      : isSentenceCard(card)
-                        ? card.data.sentence
-                        : ""}
+                <p className="whitespace-pre-wrap text-3xl leading-relaxed mb-2">
+                  {card.data.word}
                 </p>
-                {mode === "test" && isWordCard(card) && card.data.pronunciation && (
+                {card.data.pronunciation && (
                   <div className="mt-2 flex items-center justify-center gap-2">
                     <p className="text-xl text-gray-400 dark:text-gray-500">
                       {card.data.pronunciation}
@@ -434,7 +401,7 @@ export default function ReviewPage() {
                     {deck?.language && (
                       <span className="-mr-8">
                         <PlayButton
-                          ref={playButtonRef2}
+                          ref={playButtonRef1}
                           text={card.data.word}
                           lang={deck.language}
                           tag="word"
@@ -443,9 +410,122 @@ export default function ReviewPage() {
                     )}
                   </div>
                 )}
+                {card.data.exampleSentence && (
+                  <div className="mt-4 border-t border-gray-200 pt-1 dark:border-gray-700">
+                    <div className=" hidden mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                      例句
+                    </div>
+                    <p className="whitespace-pre-wrap text-ms text-gray-700 dark:text-gray-300">
+                      {card.data.exampleSentence}
+                    </p>
+                  </div>
+                )}
+                <div className="mt-4 h-5 flex items-center justify-center">
+                  <p className="text-sm text-gray-400">
+                    点击显示翻译与释义
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+
+          {/* Translation/Answer */}
+          {(revealStage === "translation" ||
+            revealStage === "details" ||
+            revealStage === "rating") && (
+              <div className="text-center w-full">
+                <div className="mb-2 flex items-center justify-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                  <span>
+                    {mode === "learning"
+                      ? isWord
+                        ? "单词"
+                        : "句子"
+                      : "翻译"}
+                  </span>
+                  {isWordCard(card) && card.data.level && (
+                    <span className="rounded bg-purple-100 px-2 py-0.5 text-[10px] font-semibold text-purple-800 dark:bg-purple-900/40 dark:text-purple-200 -mr-8">
+                      {card.data.level}
+                    </span>
+                  )}
+                </div>
+                <p className={`whitespace-pre-wrap text-3xl leading-relaxed ${mode === "learning" && isWordCard(card) && card.data.pronunciation ? "mb-2" : "mb-4"}`}>
+                  {mode === "learning"
+                    ? isWordCard(card)
+                      ? card.data.word
+                      : isSentenceCard(card)
+                        ? card.data.sentence
+                        : ""
+                    : card.data.translation}
+                </p>
+                {mode === "learning" && isWordCard(card) && card.data.pronunciation && (
+                  <div className="mb-4 flex items-center justify-center gap-2">
+                    <p className="text-xl text-gray-400 dark:text-gray-500">
+                      {card.data.pronunciation}
+                    </p>
+                    {deck?.language && (
+                      <span className="-mr-8">
+                        <PlayButton
+                          ref={playButtonRef1}
+                          text={card.data.word}
+                          lang={deck.language}
+                          tag="word"
+                        /></span>
+                    )}
+                  </div>
+                )}
+                {mode === "learning" && revealStage === "rating" && isWordCard(card) && card.data.exampleSentence && (
+                  <div className="dark:border-gray-700">
+                    <div className=" hidden mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                      例句
+                    </div>
+                    <p className="whitespace-pre-wrap text-ms text-gray-700 dark:text-gray-300">
+                      {card.data.exampleSentence}
+                    </p>
+                  </div>
+                )}
+                <div className="border-t border-gray-200 pt-4 dark:border-gray-700">
+                  <div className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                    {mode === "learning" ? "翻译" : "答案"}
+                  </div>
+                  <p className={`whitespace-pre-wrap text-2xl text-gray-700 dark:text-gray-300 ${mode === "test" && isWordCard(card) && card.data.pronunciation ? "mb-2" : ""}`}>
+                    {mode === "learning"
+                      ? card.data.translation
+                      : isWordCard(card)
+                        ? card.data.word
+                        : isSentenceCard(card)
+                          ? card.data.sentence
+                          : ""}
+                  </p>
+                  {mode === "learning" && revealStage === "rating" && isWordCard(card) && card.data.definition && (
+                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <div></div>
+                      <div className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                        详细释义
+                      </div>
+                      <p className="bg-zinc-100  whitespace-pre-wrap text-ms text-gray-700 dark:text-gray-300">
+                        {card.data.definition}
+                      </p>
+                    </div>
+                  )}
+                  {mode === "test" && isWordCard(card) && card.data.pronunciation && (
+                    <div className="mt-2 flex items-center justify-center gap-2">
+                      <p className="text-xl text-gray-400 dark:text-gray-500">
+                        {card.data.pronunciation}
+                      </p>
+                      {deck?.language && (
+                        <span className="-mr-8">
+                          <PlayButton
+                            ref={playButtonRef2}
+                            text={card.data.word}
+                            lang={deck.language}
+                            tag="word"
+                          />
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
           {/* Details (word only) - Temporarily hidden */}
           {/* {isWordCard(card) &&
@@ -510,10 +590,17 @@ export default function ReviewPage() {
           <div className="mt-4 h-5 flex items-center justify-center">
             {revealStage === "front" && (
               <p className="text-sm text-gray-400 text-center">
-                点击或按 <kbd className="rounded bg-gray-200 px-1.5 py-0.5 font-mono text-xs dark:bg-gray-600">J</kbd> 显示翻译与评分 · <kbd className="rounded bg-gray-200 px-1.5 py-0.5 font-mono text-xs dark:bg-gray-600">H</kbd> 播放
+                点击或按 <kbd className="rounded bg-gray-200 px-1.5 py-0.5 font-mono text-xs dark:bg-gray-600">J</kbd>
+                {mode === "learning" && isWordCard(card) ? " 显示例句" : " 显示翻译与评分"}
+                {" · "}
+                <kbd className="rounded bg-gray-200 px-1.5 py-0.5 font-mono text-xs dark:bg-gray-600">H</kbd> 播放
               </p>
             )}
-            
+            {revealStage === "sentence" && (
+              <p className="text-sm text-gray-400 text-center">
+                点击或按 <kbd className="rounded bg-gray-200 px-1.5 py-0.5 font-mono text-xs dark:bg-gray-600">J</kbd> 显示翻译与释义 · <kbd className="rounded bg-gray-200 px-1.5 py-0.5 font-mono text-xs dark:bg-gray-600">H</kbd> 播放
+              </p>
+            )}
           </div>
         </div>
 
@@ -557,7 +644,7 @@ export default function ReviewPage() {
 
         {/* Example sentence and definition - shown during rating */}
         {revealStage === "rating" && isWordCard(card) && (
-          <div className="mt-6 w-full max-w-[360px] mx-auto space-y-4">
+          <div className=" hidden mt-6 w-full max-w-[360px] mx-auto space-y-4">
             {card.data.definition && (
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
                 <div className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
