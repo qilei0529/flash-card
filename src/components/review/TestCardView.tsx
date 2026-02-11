@@ -38,7 +38,7 @@ export function TestCardView({
   return (
     <>
     <div
-      className={`flex-1 w-full max-w-[360px] min-h-[280px] mx-auto select-none rounded-2xl border-2 border-gray-200 bg-white p-8 pt-4 pb-4 shadow-lg dark:border-gray-700 dark:bg-gray-800 flex flex-col items-center justify-center ${
+      className={`flex-1 w-full max-w-[360px] min-h-[280px] mx-auto rounded-2xl border-2 border-gray-200 bg-white p-8 pt-4 pb-4 shadow-lg dark:border-gray-700 dark:bg-gray-800 flex flex-col items-center justify-center ${
         isRating ? "max-h-[420px] overflow-y-auto" : "max-h-[280px]"
       } ${!isRating ? "cursor-pointer" : ""}`}
       onClick={!isRating ? onCardClick : undefined}
