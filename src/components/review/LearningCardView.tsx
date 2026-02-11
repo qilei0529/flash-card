@@ -112,7 +112,7 @@ export function LearningCardView({
           )}
           {card.data.exampleSentence && (
             <div className="border-gray-200 pt-4 dark:border-gray-700">
-              <p className="whitespace-pre-wrap text-xl text-gray-700 dark:text-gray-300 italic">
+              <p className="whitespace-pre-wrap text-xl text-gray-700 dark:text-gray-300 ">
                 {card.data.exampleSentence}
               </p>
             </div>
