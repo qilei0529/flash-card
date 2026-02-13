@@ -44,8 +44,6 @@ import type {
 } from "@/types";
 import { CardForm } from "@/components/CardForm";
 import { cardsToCSV, downloadCSV } from "@/lib/export/csv";
-import { getCardIdsWithLastRating } from "@/lib/review";
-
 export default function DeckPage() {
   const params = useParams();
   const router = useRouter();
@@ -70,8 +68,6 @@ export default function DeckPage() {
   ]);
   const [savingSettings, setSavingSettings] = useState(false);
   const [proficiencyFilter, setProficiencyFilter] = useState<number | "all">("all");
-  const [lastRatingFilter, setLastRatingFilter] = useState<"all" | "again">("all");
-  const [againCardIds, setAgainCardIds] = useState<Set<string> | null>(null);
   const [cleaning, setCleaning] = useState(false);
   const [actionsOpen, setActionsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -86,7 +82,6 @@ export default function DeckPage() {
     loadDeck();
     loadCards();
     loadDueCount();
-    loadAgainCardIds();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deckId]);
 
@@ -113,11 +108,6 @@ export default function DeckPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [deckId, dueCount, router]);
 
-  async function loadAgainCardIds() {
-    const ids = await getCardIdsWithLastRating(deckId, 1, { withinDays: 7 });
-    setAgainCardIds(new Set(ids));
-  }
-
   async function loadDeck() {
     const d = await db.decks.get(deckId);
     if (!d || d.deletedAt) {
@@ -140,14 +130,10 @@ export default function DeckPage() {
     setCards(list);
   }
 
-  // Filter cards by proficiency level, last rating (Again), and search
+  // Filter cards by proficiency level and search
   const q = searchQuery.trim().toLowerCase();
   const filteredCards = cards.filter((card) => {
     if (proficiencyFilter !== "all" && card.state !== proficiencyFilter) return false;
-    if (lastRatingFilter === "again") {
-      if (againCardIds === null) return true; // show all until loaded
-      if (!againCardIds.has(card.id)) return false;
-    }
     if (levelFilter !== "all") {
       if (!isWordCard(card)) return false;
       const lvl = card.data.level;
@@ -265,21 +251,6 @@ export default function DeckPage() {
     setEditingCard(null);
     loadCards();
     loadDueCount();
-  }
-
-  async function handleRemoveAgainCards() {
-    if (filteredCards.length === 0) return;
-    const n = filteredCards.length;
-    const word = n === 1 ? "这张卡片" : `这 ${n} 张卡片`;
-    if (!confirm(`确定要从牌组移除 ${word} 吗？\n\n（这些是过去一周内评为「Again」的卡片，移除后牌组将不再包含它们。）`)) return;
-    for (const card of filteredCards) {
-      await deleteCard(card.id);
-    }
-    setEditingCard(null);
-    setLastRatingFilter("all");
-    await loadCards();
-    await loadDueCount();
-    loadAgainCardIds();
   }
 
   async function handleSaveSettings() {
@@ -833,18 +804,6 @@ export default function DeckPage() {
                 </option>
               </select>
               <select
-                value={lastRatingFilter}
-                onChange={(e) =>
-                  setLastRatingFilter(e.target.value as "all" | "again")
-                }
-                className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white w-[100px]"
-              >
-                <option value="all">评分</option>
-                <option value="again">
-                  Again({againCardIds?.size ?? "..."})
-                </option>
-              </select>
-              <select
                 value={levelFilter}
                 onChange={(e) =>
                   setLevelFilter(
@@ -889,9 +848,7 @@ export default function DeckPage() {
             <p className="text-gray-500 dark:text-gray-400">
               {searchQuery.trim()
                 ? "没有匹配的卡片"
-                : lastRatingFilter === "again"
-                  ? "没有过去一周内评为「Again」的卡片"
-                  : `没有 ${getProficiencyLabel(proficiencyFilter)} 的卡片`}
+                : `没有 ${getProficiencyLabel(proficiencyFilter)} 的卡片`}
             </p>
           ) : (
             filteredCards.map((card) => (
