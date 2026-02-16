@@ -43,6 +43,7 @@ import type {
   CefrLevel,
 } from "@/types";
 import { CardForm } from "@/components/CardForm";
+import { PlayButton } from "@/components/PlayButton";
 import { cardsToCSV, downloadCSV } from "@/lib/export/csv";
 export default function DeckPage() {
   const params = useParams();
@@ -851,14 +852,31 @@ export default function DeckPage() {
                 : `没有 ${getProficiencyLabel(proficiencyFilter)} 的卡片`}
             </p>
           ) : (
-            filteredCards.map((card) => (
+            filteredCards.map((card) => {
+              const playText = isWordCard(card)
+                ? card.data.word
+                : isSentenceCard(card)
+                  ? card.data.sentence
+                  : "";
+              const playTag = isWordCard(card) ? "word" : "sentence";
+              const lang = deck?.language ?? "English";
+              return (
               <div
                 key={card.id}
                 className={`flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800 ${
                   editingCard?.id === card.id ? "ring-2 ring-blue-500" : ""
                 }`}
               >
-                <div className="min-w-0 flex-1">
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  {playText.trim() ? (
+                    <PlayButton
+                      text={playText}
+                      lang={lang}
+                      tag={playTag}
+                      className="shrink-0"
+                    />
+                  ) : null}
+                  <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
                       {card.type === "word" ? "单词" : "句子"}
@@ -899,6 +917,7 @@ export default function DeckPage() {
                     </>
                   ) : null}
                 </div>
+                </div>
                 <div className="ml-4 flex gap-2">
                   <button
                     onClick={() =>
@@ -918,7 +937,8 @@ export default function DeckPage() {
                   </button>
                 </div>
               </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>
