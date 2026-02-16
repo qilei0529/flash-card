@@ -28,7 +28,7 @@ export function CardForm({
   stickyActions = false,
 }: CardFormProps) {
   const [type, setType] = useState<CardType>(
-    initialCard?.type || "sentence"
+    initialCard?.type || "word"
   );
   const [fetchingWord, setFetchingWord] = useState(false);
   const [wordData, setWordData] = useState<WordCardData>({

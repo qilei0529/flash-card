@@ -55,8 +55,7 @@ export default function DeckPage() {
   const [deck, setDeck] = useState<Deck | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
   const [dueCount, setDueCount] = useState(0);
-  const [showForm, setShowForm] = useState(false);
-  const [editingCard, setEditingCard] = useState<Card | null>(null);
+  const [cardModal, setCardModal] = useState<null | "add" | Card>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [deckName, setDeckName] = useState<string>("");
   const [cardsPerSession, setCardsPerSession] = useState<number>(30);
@@ -233,7 +232,7 @@ export default function DeckPage() {
     data: WordCardData | SentenceCardData
   ) {
     await createCard(deckId, type, data);
-    setShowForm(false);
+    setCardModal(null);
     loadCards();
     loadDueCount();
   }
@@ -244,14 +243,14 @@ export default function DeckPage() {
     data: WordCardData | SentenceCardData
   ) {
     await updateCard(id, { type, data });
-    setEditingCard(null);
+    setCardModal(null);
     loadCards();
   }
 
   async function handleDeleteCard(id: string) {
     if (!confirm("Delete this card?")) return;
     await deleteCard(id);
-    setEditingCard(null);
+    setCardModal(null);
     loadCards();
     loadDueCount();
   }
@@ -634,6 +633,14 @@ export default function DeckPage() {
               <History className="h-4 w-4" />
               历史
             </Link>
+            <button
+              type="button"
+              onClick={() => setCardModal("add")}
+              className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              <Plus className="h-4 w-4" />
+              添加
+            </button>
           </div>
           <div className="relative">
             <button
@@ -654,17 +661,6 @@ export default function DeckPage() {
                   onClick={() => setActionsOpen(false)}
                 />
                 <div className="absolute right-0 top-full z-20 mt-1 min-w-[180px] rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-600 dark:bg-gray-800">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActionsOpen(false);
-                      setShowForm(true);
-                    }}
-                    className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    <Plus className="h-4 w-4" />
-                    添加卡片
-                  </button>
                   <Link
                     href={`/import?deckId=${deckId}`}
                     className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -725,40 +721,40 @@ export default function DeckPage() {
           </div>
         </div>
 
-        {showForm && (
-          <CardForm
-            onSubmit={handleCreateCard}
-            onCancel={() => setShowForm(false)}
-          />
-        )}
-
-        {editingCard && (
+        {cardModal !== null && (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
             role="dialog"
             aria-modal="true"
-            aria-labelledby="edit-card-title"
+            aria-labelledby="card-modal-title"
           >
             <div
               className="absolute inset-0 bg-black/10 dark:bg-black/60"
               aria-hidden="true"
-              onClick={() => setEditingCard(null)}
+              onClick={() => setCardModal(null)}
             />
             <div className="relative z-10 flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
               <h2
-                id="edit-card-title"
+                id="card-modal-title"
                 className="flex-shrink-0 border-b border-gray-100 px-5 pt-3 pb-2 text-md font-semibold dark:border-gray-700"
               >
-                编辑卡片
+                {cardModal === "add" ? "添加卡片" : "编辑卡片"}
               </h2>
               <CardForm
-                initialCard={editingCard}
-                onSubmit={(type, data) =>
-                  handleUpdateCard(editingCard.id, type, data)
+                initialCard={cardModal === "add" ? undefined : cardModal}
+                onSubmit={
+                  cardModal === "add"
+                    ? handleCreateCard
+                    : (type, data) =>
+                        handleUpdateCard(cardModal.id, type, data)
                 }
-                onCancel={() => setEditingCard(null)}
-                onDelete={() => handleDeleteCard(editingCard.id)}
-                sourceLang={deck.language || "English"}
+                onCancel={() => setCardModal(null)}
+                onDelete={
+                  cardModal === "add"
+                    ? undefined
+                    : () => handleDeleteCard(cardModal.id)
+                }
+                sourceLang={deck?.language || "English"}
                 stickyActions
               />
             </div>
@@ -860,18 +856,18 @@ export default function DeckPage() {
                   <DeckWordCardRow
                     card={card}
                     deck={deck}
-                    editingCard={editingCard}
+                    editingCard={typeof cardModal === "object" ? cardModal : null}
                     getProficiencyBadge={getProficiencyBadge}
-                    onEdit={setEditingCard}
+                    onEdit={setCardModal}
                     onDelete={handleDeleteCard}
                   />
                 ) : isSentenceCard(card) ? (
                   <DeckSentenceCardRow
                     card={card}
                     deck={deck}
-                    editingCard={editingCard}
+                    editingCard={typeof cardModal === "object" ? cardModal : null}
                     getProficiencyBadge={getProficiencyBadge}
-                    onEdit={setEditingCard}
+                    onEdit={setCardModal}
                     onDelete={handleDeleteCard}
                   />
                 ) : null}
