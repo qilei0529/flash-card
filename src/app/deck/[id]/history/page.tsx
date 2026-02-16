@@ -198,6 +198,14 @@ function SessionList({
     });
   }
 
+  function formatDuration(seconds: number): string {
+    if (seconds < 60) return `${seconds} 秒`;
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    if (s === 0) return `${m} 分钟`;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  }
+
   return (
     <div className="space-y-8">
       {sortedDates.map((dateKey) => {
@@ -249,6 +257,9 @@ function SessionList({
                         <span>
                           {session.completedCards} / {session.totalCards} 张卡片
                         </span>
+                        {session.durationSeconds != null && (
+                          <span>{formatDuration(session.durationSeconds)}</span>
+                        )}
                       </div>
                     </div>
                     <div className="ml-4 flex-shrink-0">

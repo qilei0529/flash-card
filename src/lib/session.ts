@@ -54,7 +54,7 @@ export async function getSessionsByDeck(deckId: string): Promise<Session[]> {
  */
 export async function updateSession(
   sessionId: string,
-  updates: Partial<Pick<Session, "completedAt" | "completedCards">>
+  updates: Partial<Pick<Session, "completedAt" | "completedCards" | "durationSeconds">>
 ): Promise<void> {
   await db.sessions.update(sessionId, updates);
 }
@@ -79,20 +79,30 @@ export async function getSessionCards(sessionId: string): Promise<Card[]> {
 /**
  * Mark a session as completed
  */
-export async function completeSession(sessionId: string): Promise<void> {
+export async function completeSession(
+  sessionId: string,
+  durationSeconds?: number
+): Promise<void> {
   const session = await getSession(sessionId);
   if (!session) return;
 
-  await updateSession(sessionId, {
+  const updates: Parameters<typeof updateSession>[1] = {
     completedAt: new Date().toISOString(),
     completedCards: session.totalCards,
-  });
+  };
+  if (durationSeconds != null) {
+    updates.durationSeconds = durationSeconds;
+  }
+  await updateSession(sessionId, updates);
 }
 
 /**
  * Increment completed cards count for a session
  */
-export async function incrementSessionProgress(sessionId: string): Promise<void> {
+export async function incrementSessionProgress(
+  sessionId: string,
+  durationSeconds?: number
+): Promise<void> {
   const session = await getSession(sessionId);
   if (!session) return;
 
@@ -107,7 +117,7 @@ export async function incrementSessionProgress(sessionId: string): Promise<void>
 
   // Auto-complete if all cards are done
   if (newCompletedCards >= session.totalCards && !session.completedAt) {
-    await completeSession(sessionId);
+    await completeSession(sessionId, durationSeconds);
   }
 }
 

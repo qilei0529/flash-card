@@ -41,8 +41,26 @@ export default function ReviewPage() {
   const [deck, setDeck] = useState<Deck | null>(null);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(sessionId);
   const [sessionCompleted, setSessionCompleted] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const startTimeRef = useRef<number | null>(null);
   const playButtonRef1 = useRef<PlayButtonHandle>(null);
   const playButtonRef2 = useRef<PlayButtonHandle>(null);
+
+  // Start timer when showing card view; tick every second; reset when leaving card view
+  useEffect(() => {
+    if (cards.length === 0) {
+      startTimeRef.current = null;
+      return;
+    }
+    if (startTimeRef.current === null) {
+      startTimeRef.current = Date.now();
+    }
+    const interval = setInterval(() => {
+      if (startTimeRef.current === null) return;
+      setElapsedSeconds(Math.floor((Date.now() - startTimeRef.current) / 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [cards.length]);
 
   useEffect(() => {
     loadDeckAndCards();
@@ -208,14 +226,19 @@ export default function ReviewPage() {
 
     await recordReview(card.id, rating);
 
-    // Update session progress
+    // Update session progress; pass duration when completing last card
+    const isLastCard = index === cards.length - 1;
+    const duration =
+      isLastCard && startTimeRef.current != null
+        ? Math.floor((Date.now() - startTimeRef.current) / 1000)
+        : undefined;
     if (currentSessionId) {
-      await incrementSessionProgress(currentSessionId);
+      await incrementSessionProgress(currentSessionId, duration);
     }
 
     setRevealStage("front");
 
-    if (index < cards.length - 1) {
+    if (!isLastCard) {
       setIndex(index + 1);
     } else {
       setSessionCompleted(true);
@@ -288,7 +311,7 @@ export default function ReviewPage() {
     <main className="flex min-h-screen flex-col p-6 sm:p-8">
       <div className="mx-auto w-full max-w-2xl flex-1 flex flex-col">
 
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4 flex items-center justify-between relative">
           <div className="flex flex-row items-center gap-2">
             <Link
               href={`/deck/${deckId}`}
@@ -308,6 +331,9 @@ export default function ReviewPage() {
               {mode === "learning" ? "学习模式" : "测验模式"}
             </span>
           </div>
+          <p className="absolute left-1/2 -translate-x-1/2 text-sm font-medium tabular-nums text-gray-700 dark:text-gray-300">
+            {Math.floor(elapsedSeconds / 60)}:{(elapsedSeconds % 60).toString().padStart(2, "0")}
+          </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             {index + 1} of {cards.length}
           </p>

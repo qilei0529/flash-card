@@ -71,4 +71,5 @@ export interface Session {
   completedAt: string | null; // ISO string, null if session is incomplete
   totalCards: number;
   completedCards: number; // Number of cards reviewed in this session
+  durationSeconds?: number; // Time spent in this session (set when completed)
 }
