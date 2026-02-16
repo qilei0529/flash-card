@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 import { getSessionCards, getRatingsForSession } from "@/lib/session";
 import { isWordCard, isSentenceCard } from "@/lib/card";
 import { PlayButton } from "@/components/PlayButton";
-import type { Deck } from "@/types";
+import type { Deck, SessionMode } from "@/types";
 import type { Card, WordCardData, SentenceCardData } from "@/types";
 
 const RATING_LABELS: Record<1 | 2 | 3 | 4, string> = {
@@ -26,15 +26,18 @@ function WordCardRow({
   card,
   rating,
   deck,
+  sessionMode,
 }: {
   card: Card & { type: "word"; data: WordCardData };
   rating: 1 | 2 | 3 | 4 | undefined;
   deck: Deck;
+  sessionMode: SessionMode;
 }) {
   const { word, translation, definition, pronunciation, level, exampleSentence } = card.data;
   const ratingLabel = rating !== undefined ? RATING_LABELS[rating] : "—";
   const ratingClassName =
     rating !== undefined ? RATING_STYLES[rating] : "text-gray-400 dark:text-gray-500";
+  const ratingLabelText = sessionMode === "learning" ? "自评:" : "测验选择:";
   return (
     <>
       <div className="flex-shrink-0 pt-0.5">
@@ -73,7 +76,7 @@ function WordCardRow({
           </p>
         )}
         <p className="mt-2 flex items-center gap-1.5 text-sm">
-          <span className="text-gray-500 dark:text-gray-400">测验选择:</span>
+          <span className="text-gray-500 dark:text-gray-400">{ratingLabelText}</span>
           <span className={ratingClassName}>{ratingLabel}</span>
         </p>
       </div>
@@ -85,15 +88,18 @@ function SentenceCardRow({
   card,
   rating,
   deck,
+  sessionMode,
 }: {
   card: Card & { type: "sentence"; data: SentenceCardData };
   rating: 1 | 2 | 3 | 4 | undefined;
   deck: Deck;
+  sessionMode: SessionMode;
 }) {
   const { sentence, translation } = card.data;
   const ratingLabel = rating !== undefined ? RATING_LABELS[rating] : "—";
   const ratingClassName =
     rating !== undefined ? RATING_STYLES[rating] : "text-gray-400 dark:text-gray-500";
+  const ratingLabelText = sessionMode === "learning" ? "自评:" : "测验选择:";
   return (
     <>
       <div className="flex-shrink-0 pt-0.5">
@@ -114,7 +120,7 @@ function SentenceCardRow({
           {translation}
         </p>
         <p className="mt-2 flex items-center gap-1.5 text-xs">
-          <span className="text-gray-500 dark:text-gray-400">测验选择:</span>
+          <span className="text-gray-500 dark:text-gray-400">{ratingLabelText}</span>
           <span className={ratingClassName}>{ratingLabel}</span>
         </p>
       </div>
@@ -124,12 +130,14 @@ function SentenceCardRow({
 
 export interface TestResultModalProps {
   sessionId: string | null;
+  sessionMode?: SessionMode;
   deck: Deck;
   onClose: () => void;
 }
 
 export function TestResultModal({
   sessionId,
+  sessionMode = "test",
   deck,
   onClose,
 }: TestResultModalProps) {
@@ -199,7 +207,7 @@ export function TestResultModal({
               id="test-result-title"
               className="text-lg font-semibold text-gray-900 dark:text-white"
             >
-              测验结果
+              {sessionMode === "learning" ? "学习结果" : "测验结果"}
             </h2>
             <button
               type="button"
@@ -211,7 +219,9 @@ export function TestResultModal({
             </button>
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            本次测验的所有单词及你的选择
+            {sessionMode === "learning"
+              ? "本次学习的所有单词及你的选择"
+              : "本次测验的所有单词及你的选择"}
           </p>
           {!loading && (
             <div className="mt-3 flex flex-wrap items-center gap-4 border-t border-gray-100 pt-3 dark:border-gray-700">
@@ -263,12 +273,14 @@ export function TestResultModal({
                         card={card}
                         rating={rating}
                         deck={deck}
+                        sessionMode={sessionMode}
                       />
                     ) : isSentenceCard(card) ? (
                       <SentenceCardRow
                         card={card}
                         rating={rating}
                         deck={deck}
+                        sessionMode={sessionMode}
                       />
                     ) : null}
                   </li>

@@ -147,6 +147,7 @@ function SessionList({
   deck: Deck;
 }) {
   const [viewSessionId, setViewSessionId] = useState<string | null>(null);
+  const [viewSessionMode, setViewSessionMode] = useState<"learning" | "test">("test");
 
   const groupedSessions = groupSessionsByDate(sessions);
   // Sort dates by getting the first session's createdAt from each group
@@ -258,15 +259,18 @@ function SessionList({
                         >
                           继续
                         </Link>
-                      ) : session.mode === "test" ? (
+                      ) : (
                         <button
                           type="button"
-                          onClick={() => setViewSessionId(session.id)}
+                          onClick={() => {
+                            setViewSessionId(session.id);
+                            setViewSessionMode(session.mode);
+                          }}
                           className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
                         >
                           查看
                         </button>
-                      ) : null}
+                      )}
                     </div>
                   </div>
                 </div>
@@ -278,8 +282,12 @@ function SessionList({
 
       <TestResultModal
         sessionId={viewSessionId}
+        sessionMode={viewSessionMode}
         deck={deck}
-        onClose={() => setViewSessionId(null)}
+        onClose={() => {
+          setViewSessionId(null);
+          setViewSessionMode("test");
+        }}
       />
     </div>
   );
