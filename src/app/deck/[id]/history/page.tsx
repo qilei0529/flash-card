@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Clock, CheckCircle2, Circle } from "lucide-react";
+import { ArrowLeft, Clock, CheckCircle2, Circle, Eye } from "lucide-react";
 import { db } from "@/lib/db";
 import { getSessionsByDeck } from "@/lib/session";
+import { TestResultModal } from "@/components/TestResultModal";
 import type { Deck, Session } from "@/types";
 
 function groupSessionsByDate(sessions: Session[]): Map<string, Session[]> {
@@ -96,7 +97,7 @@ export default function HistoryPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen p-6 sm:p-8">
+      <main className="min-h-screen p-4">
         <div className="mx-auto max-w-3xl">
           <div className="p-8 text-center">Loading...</div>
         </div>
@@ -107,7 +108,7 @@ export default function HistoryPage() {
   if (!deck) return null;
 
   return (
-    <main className="min-h-screen p-6 sm:p-8">
+    <main className="min-h-screen p-4">
       <div className="mx-auto max-w-3xl">
         <Link
           href={`/deck/${deckId}`}
@@ -129,14 +130,24 @@ export default function HistoryPage() {
             </p>
           </div>
         ) : (
-          <SessionList sessions={sessions} deckId={deckId} />
+          <SessionList sessions={sessions} deckId={deckId} deck={deck} />
         )}
       </div>
     </main>
   );
 }
 
-function SessionList({ sessions, deckId }: { sessions: Session[]; deckId: string }) {
+function SessionList({
+  sessions,
+  deckId,
+  deck,
+}: {
+  sessions: Session[];
+  deckId: string;
+  deck: Deck;
+}) {
+  const [viewSessionId, setViewSessionId] = useState<string | null>(null);
+
   const groupedSessions = groupSessionsByDate(sessions);
   // Sort dates by getting the first session's createdAt from each group
   const sortedDates = Array.from(groupedSessions.keys()).sort((a, b) => {
@@ -239,14 +250,24 @@ function SessionList({ sessions, deckId }: { sessions: Session[]; deckId: string
                         </span>
                       </div>
                     </div>
-                    {!session.completedAt && (
-                      <Link
-                        href={`/deck/${deckId}/review?mode=${session.mode}&sessionId=${session.id}`}
-                        className="ml-4 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
-                      >
-                        继续
-                      </Link>
-                    )}
+                    <div className="ml-4 flex-shrink-0">
+                      {!session.completedAt ? (
+                        <Link
+                          href={`/deck/${deckId}/review?mode=${session.mode}&sessionId=${session.id}`}
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
+                        >
+                          继续
+                        </Link>
+                      ) : session.mode === "test" ? (
+                        <button
+                          type="button"
+                          onClick={() => setViewSessionId(session.id)}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                        >
+                          查看
+                        </button>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -254,6 +275,12 @@ function SessionList({ sessions, deckId }: { sessions: Session[]; deckId: string
           </div>
         );
       })}
+
+      <TestResultModal
+        sessionId={viewSessionId}
+        deck={deck}
+        onClose={() => setViewSessionId(null)}
+      />
     </div>
   );
 }

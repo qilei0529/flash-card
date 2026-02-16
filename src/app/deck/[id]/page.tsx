@@ -435,7 +435,7 @@ export default function DeckPage() {
       : 0;
 
   return (
-    <main className="min-h-screen p-6 sm:p-8">
+    <main className="min-h-screen p-4">
       <div className="mx-auto max-w-3xl">
         <Link
           href="/"

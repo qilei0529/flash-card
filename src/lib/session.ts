@@ -110,3 +110,45 @@ export async function incrementSessionProgress(sessionId: string): Promise<void>
     await completeSession(sessionId);
   }
 }
+
+/**
+ * Get the rating (1-4) given to each card during a completed session.
+ * Infers from reviewRecords where reviewedAt falls within the session window.
+ */
+export async function getRatingsForSession(
+  sessionId: string
+): Promise<Map<string, 1 | 2 | 3 | 4>> {
+  const session = await getSession(sessionId);
+  if (!session?.completedAt || session.cardIds.length === 0) {
+    return new Map();
+  }
+
+  const records = await db.reviewRecords
+    .where("cardId")
+    .anyOf(session.cardIds)
+    .toArray();
+
+  const endAt = new Date(session.completedAt);
+  endAt.setMinutes(endAt.getMinutes() + 5);
+  const endAtIso = endAt.toISOString();
+
+  const inWindow = records.filter(
+    (r) =>
+      r.reviewedAt >= session.createdAt && r.reviewedAt <= endAtIso
+  );
+
+  const latestByCard = new Map<string, { rating: 1 | 2 | 3 | 4; reviewedAt: string }>();
+  for (const r of inWindow) {
+    const existing = latestByCard.get(r.cardId);
+    const rating = r.rating as 1 | 2 | 3 | 4;
+    if (!existing || r.reviewedAt > existing.reviewedAt) {
+      latestByCard.set(r.cardId, { rating, reviewedAt: r.reviewedAt });
+    }
+  }
+
+  const result = new Map<string, 1 | 2 | 3 | 4>();
+  for (const [cardId, { rating }] of latestByCard) {
+    result.set(cardId, rating);
+  }
+  return result;
+}

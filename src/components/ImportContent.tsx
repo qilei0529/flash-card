@@ -211,7 +211,7 @@ export function ImportContent() {
   }
 
   return (
-    <main className="min-h-screen p-6 sm:p-8">
+    <main className="min-h-screen p-4">
       <div className="mx-auto max-w-2xl">
         <Link
           href={selectedDeckId ? `/deck/${selectedDeckId}` : "/"}
