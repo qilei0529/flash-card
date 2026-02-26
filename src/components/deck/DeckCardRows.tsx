@@ -88,7 +88,7 @@ export function DeckWordCardRow({
 }: DeckCardRowProps & {
   card: Card & { type: "word"; data: WordCardData };
 }) {
-  const { word, translation, pronunciation, exampleSentence, level } =
+  const { word, translation, pronunciation, partOfSpeech, exampleSentence, level } =
     card.data;
   const lang = deck?.language ?? "English";
 
@@ -111,6 +111,9 @@ export function DeckWordCardRow({
               </span>
             )}
           </p>
+          {partOfSpeech && (
+            <p className="text-xs text-gray-400 dark:text-gray-500">{partOfSpeech}</p>
+          )}
           <p className="truncate text-sm text-gray-500 dark:text-gray-400">
             {translation}
           </p>
