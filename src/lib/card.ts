@@ -147,12 +147,31 @@ export async function getDueCardsForSession(
   return shuffleArray(selected);
 }
 
+export type CardProgressFields = Partial<
+  Pick<
+    Card,
+    | "due"
+    | "stability"
+    | "difficulty"
+    | "elapsedDays"
+    | "scheduledDays"
+    | "learningSteps"
+    | "reps"
+    | "lapses"
+    | "state"
+    | "lastReview"
+  >
+>;
+
 export async function createCard(
   deckId: string,
   type: CardType,
-  data: WordCardData | SentenceCardData
+  data: WordCardData | SentenceCardData,
+  progress?: CardProgressFields
 ): Promise<Card> {
-  const fsrsState = getEmptyCardState();
+  const fsrsState = progress
+    ? { ...getEmptyCardState(), ...progress }
+    : getEmptyCardState();
   const now = new Date().toISOString();
   const card: Card = {
     id: generateId(),
@@ -172,6 +191,7 @@ export async function updateCard(
   updates: {
     type?: CardType;
     data?: WordCardData | SentenceCardData;
+    progress?: CardProgressFields;
   }
 ): Promise<void> {
   const card = await db.cards.get(id);
@@ -187,6 +207,20 @@ export async function updateCard(
 
   if (updates.data !== undefined) {
     updateData.data = updates.data;
+  }
+
+  if (updates.progress !== undefined) {
+    const p = updates.progress;
+    if (p.due !== undefined) updateData.due = p.due;
+    if (p.stability !== undefined) updateData.stability = p.stability;
+    if (p.difficulty !== undefined) updateData.difficulty = p.difficulty;
+    if (p.elapsedDays !== undefined) updateData.elapsedDays = p.elapsedDays;
+    if (p.scheduledDays !== undefined) updateData.scheduledDays = p.scheduledDays;
+    if (p.learningSteps !== undefined) updateData.learningSteps = p.learningSteps;
+    if (p.reps !== undefined) updateData.reps = p.reps;
+    if (p.lapses !== undefined) updateData.lapses = p.lapses;
+    if (p.state !== undefined) updateData.state = p.state;
+    if ("lastReview" in p) updateData.lastReview = p.lastReview ?? null;
   }
 
   await db.cards.update(id, updateData as any);
@@ -250,23 +284,23 @@ export async function findCardByContent(
 
 /**
  * Upsert a card: update if exists (by word/sentence), create if not
+ * When progress is provided, applies FSRS fields on create or update
  * Returns the card and whether it was updated (true) or created (false)
  */
 export async function upsertCard(
   deckId: string,
   type: CardType,
-  data: WordCardData | SentenceCardData
+  data: WordCardData | SentenceCardData,
+  progress?: CardProgressFields
 ): Promise<{ card: Card; updated: boolean }> {
   const existing = await findCardByContent(deckId, type, data);
-  
+
   if (existing) {
-    // Update existing card with new data
-    await updateCard(existing.id, { type, data });
+    await updateCard(existing.id, { type, data, progress });
     const updated = await db.cards.get(existing.id);
     return { card: updated!, updated: true };
   } else {
-    // Create new card
-    const card = await createCard(deckId, type, data);
+    const card = await createCard(deckId, type, data, progress);
     return { card, updated: false };
   }
 }

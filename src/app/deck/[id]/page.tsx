@@ -46,7 +46,7 @@ import {
   DeckWordCardRow,
   DeckSentenceCardRow,
 } from "@/components/deck/DeckCardRows";
-import { cardsToCSV, downloadCSV } from "@/lib/export/csv";
+import { cardsToCSV, cardsToCSVWithProgress, downloadCSV } from "@/lib/export/csv";
 export default function DeckPage() {
   const params = useParams();
   const router = useRouter();
@@ -317,6 +317,17 @@ export default function DeckPage() {
 
     const csvContent = cardsToCSV(cards);
     const filename = `${deck?.name || "deck"}-${new Date().toISOString().split("T")[0]}.csv`;
+    downloadCSV(csvContent, filename);
+  }
+
+  function handleExportCSVWithProgress() {
+    if (cards.length === 0) {
+      alert("没有卡片可导出");
+      return;
+    }
+
+    const csvContent = cardsToCSVWithProgress(cards);
+    const filename = `${deck?.name || "deck"}-progress-${new Date().toISOString().split("T")[0]}.csv`;
     downloadCSV(csvContent, filename);
   }
 
@@ -679,6 +690,17 @@ export default function DeckPage() {
                   >
                     <FileDown className="h-4 w-4" />
                     导出 CSV
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActionsOpen(false);
+                      handleExportCSVWithProgress();
+                    }}
+                    className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    <FileDown className="h-4 w-4" />
+                    导出 CSV (含学习)
                   </button>
                   <button
                     type="button"

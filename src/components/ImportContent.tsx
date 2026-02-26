@@ -161,7 +161,12 @@ export function ImportContent() {
     let createdCount = 0;
 
     for (const c of cards) {
-      const result = await upsertCard(selectedDeckId, c.type, c.data);
+      const result = await upsertCard(
+        selectedDeckId,
+        c.type,
+        c.data,
+        c.progress
+      );
       if (result.updated) updatedCount++;
       else createdCount++;
     }

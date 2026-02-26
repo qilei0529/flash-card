@@ -82,6 +82,89 @@ export function cardsToCSV(cards: Card[]): string {
   return lines.join("\n");
 }
 
+const FSRS_COLUMNS =
+  "type,due,stability,difficulty,elapsedDays,scheduledDays,learningSteps,reps,lapses,state,lastReview";
+
+/**
+ * Convert cards to CSV format with FSRS learning progress
+ * Same content columns as cardsToCSV, plus: type, due, stability, difficulty, elapsedDays,
+ * scheduledDays, learningSteps, reps, lapses, state, lastReview
+ */
+export function cardsToCSVWithProgress(cards: Card[]): string {
+  if (cards.length === 0) return "";
+
+  const lines: string[] = [];
+  const hasWordCards = cards.some((c) => isWordCard(c));
+  const hasSentenceCards = cards.some((c) => isSentenceCard(c));
+  const useWordFormat = hasWordCards;
+
+  // Header
+  if (hasWordCards || hasSentenceCards) {
+    if (hasWordCards) {
+      lines.push(
+        `word,translation,pronunciation,partOfSpeech,definition,exampleSentence,level,${FSRS_COLUMNS}`
+      );
+    } else {
+      lines.push(`sentence,translation,level,${FSRS_COLUMNS}`);
+    }
+  }
+
+  for (const card of cards) {
+    let contentRow: string[];
+    if (isWordCard(card)) {
+      const data = card.data as WordCardData;
+      contentRow = [
+        escapeCSVField(data.word || ""),
+        escapeCSVField(data.translation || ""),
+        escapeCSVField(data.pronunciation || ""),
+        escapeCSVField(data.partOfSpeech || ""),
+        escapeCSVField(data.definition || ""),
+        escapeCSVField(data.exampleSentence || ""),
+        escapeCSVField(data.level || ""),
+      ];
+    } else if (isSentenceCard(card)) {
+      const data = card.data as SentenceCardData;
+      if (useWordFormat) {
+        contentRow = [
+          escapeCSVField(data.sentence || ""),
+          escapeCSVField(data.translation || ""),
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+        ];
+      } else {
+        contentRow = [
+          escapeCSVField(data.sentence || ""),
+          escapeCSVField(data.translation || ""),
+          "",
+        ];
+      }
+    } else {
+      continue;
+    }
+
+    const fsrsRow = [
+      escapeCSVField(card.type),
+      escapeCSVField(card.due || ""),
+      String(card.stability ?? ""),
+      String(card.difficulty ?? ""),
+      String(card.elapsedDays ?? ""),
+      String(card.scheduledDays ?? ""),
+      String(card.learningSteps ?? ""),
+      String(card.reps ?? ""),
+      String(card.lapses ?? ""),
+      String(card.state ?? ""),
+      escapeCSVField(card.lastReview || ""),
+    ];
+    lines.push([...contentRow, ...fsrsRow].join(","));
+  }
+
+  return lines.join("\n");
+}
+
 /**
  * Download CSV file
  */
