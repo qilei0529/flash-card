@@ -45,7 +45,7 @@ export function LearningCardView({
     >
       {revealStage === "front" && (
         <div className="text-center w-full">
-          <div className="mb-2 flex items-center justify-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+          <div className="flex items-center justify-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
             <span>{isWord ? "单词" : "句子"}</span>
             {isWordCard(card) && card.data.level && (
               <span className="rounded bg-purple-100 px-2 py-0.5 text-[10px] font-semibold text-purple-800 dark:bg-purple-900/40 dark:text-purple-200 -mr-8">
@@ -60,9 +60,14 @@ export function LearningCardView({
                 ? card.data.sentence
                 : ""}
           </p>
+          {isWordCard(card) && card.data.partOfSpeech && (
+            <p className="text-md text-gray-400 dark:text-gray-500">
+              {card.data.partOfSpeech}
+            </p>
+          )}
           {isWordCard(card) && card.data.pronunciation && (
-            <div className="mt-2 flex items-center justify-center gap-2">
-              <p className="text-xl text-gray-400 dark:text-gray-500">
+            <div className="flex items-center justify-center gap-2">
+              <p className="text-lg text-gray-400 dark:text-gray-500">
                 {card.data.pronunciation}
               </p>
               {deck?.language && (
@@ -82,7 +87,7 @@ export function LearningCardView({
 
       {revealStage === "sentence" && isWordCard(card) && (
         <div className="text-center w-full">
-          <div className="mb-2 flex items-center justify-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+          <div className="flex items-center justify-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
             <span>单词</span>
             {card.data.level && (
               <span className="rounded bg-purple-100 px-2 py-0.5 text-[10px] font-semibold text-purple-800 dark:bg-purple-900/40 dark:text-purple-200 -mr-8">
@@ -90,9 +95,14 @@ export function LearningCardView({
               </span>
             )}
           </div>
-          <p className="whitespace-pre-wrap text-3xl leading-relaxed mb-2">
+          <p className="whitespace-pre-wrap text-3xl leading-relaxed ">
             {card.data.word}
           </p>
+          {card.data.partOfSpeech && (
+            <p className="text-md text-gray-400 dark:text-gray-500">
+              {card.data.partOfSpeech}
+            </p>
+          )}
           {card.data.pronunciation && (
             <div className="mt-2 flex items-center justify-center gap-2">
               <p className="text-xl text-gray-400 dark:text-gray-500">
@@ -124,7 +134,7 @@ export function LearningCardView({
         revealStage === "details" ||
         revealStage === "rating") && (
         <div className="text-center w-full">
-          <div className="mb-2 flex items-center justify-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+          <div className="flex items-center justify-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
             <span>{isWord ? "单词" : "句子"}</span>
             {isWordCard(card) && card.data.level && (
               <span className="rounded bg-purple-100 px-2 py-0.5 text-[10px] font-semibold text-purple-800 dark:bg-purple-900/40 dark:text-purple-200 -mr-8">
@@ -133,9 +143,7 @@ export function LearningCardView({
             )}
           </div>
           <p
-            className={`whitespace-pre-wrap text-3xl leading-relaxed ${
-              isWordCard(card) && card.data.pronunciation ? "mb-2" : "mb-4"
-            }`}
+            className={`whitespace-pre-wrap text-3xl leading-relaxed`}
           >
             {isWordCard(card)
               ? card.data.word
@@ -143,6 +151,11 @@ export function LearningCardView({
                 ? card.data.sentence
                 : ""}
           </p>
+          {isWordCard(card) && card.data.partOfSpeech && (
+            <p className="text-xs text-gray-400 dark:text-gray-500">
+              {card.data.partOfSpeech}
+            </p>
+          )}
           {isWordCard(card) && card.data.pronunciation && (
             <div className="mb-2 flex items-center justify-center gap-2">
               <p className="text-xl text-gray-400 dark:text-gray-500">
