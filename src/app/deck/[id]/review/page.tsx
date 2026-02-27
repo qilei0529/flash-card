@@ -208,10 +208,18 @@ export default function ReviewPage() {
     if (!card) return;
 
     if (revealStage === "front") {
-      if (mode === "learning" && isWordCard(card)) {
-        setRevealStage(card.data.exampleSentence ? "sentence" : "rating");
+      if (mode === "learning") {
+        if (isWordCard(card)) {
+          setRevealStage(card.data.exampleSentence ? "sentence" : "translation");
+        } else {
+          setRevealStage("rating");
+        }
       } else {
-        setRevealStage("rating");
+        if (isWordCard(card)) {
+          setRevealStage("translation");
+        } else {
+          setRevealStage("rating");
+        }
       }
     } else if (revealStage === "sentence") {
       setRevealStage("rating");
