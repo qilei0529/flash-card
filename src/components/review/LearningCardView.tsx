@@ -53,7 +53,7 @@ export function LearningCardView({
               </span>
             )}
           </div>
-          <p className="whitespace-pre-wrap text-3xl leading-relaxed">
+          <p className="py-4 whitespace-pre-wrap text-3xl leading-relaxed">
             {isWordCard(card)
               ? card.data.word
               : isSentenceCard(card)

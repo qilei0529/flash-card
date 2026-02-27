@@ -53,7 +53,7 @@ export function TestCardView({
               </span>
             )}
           </div>
-          <p className="whitespace-pre-wrap text-3xl leading-relaxed">
+          <p className="py-4 whitespace-pre-wrap text-3xl leading-relaxed">
             {card.data.translation}
           </p>
           {isWordCard(card) && card.data.partOfSpeech && (
