@@ -46,42 +46,56 @@ export function DeckList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Flash Cards</h1>
-        {!showForm ? (
-          <button
-            onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/share"
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
           >
-            <Plus className="h-4 w-4" />
-            Add deck
-          </button>
-        ) : (
-          <form onSubmit={handleCreate} className="flex gap-2">
-            <input
-              type="text"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              placeholder="Deck name"
-              className="rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-              autoFocus
-            />
+            Import by code
+          </Link>
+          <Link
+            href="/teacher"
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
+          >
+            Teacher publish
+          </Link>
+          {!showForm ? (
             <button
-              type="submit"
-              className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+              onClick={() => setShowForm(true)}
+              className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
             >
-              Create
+              <Plus className="h-4 w-4" />
+              Add deck
             </button>
-            <button
-              type="button"
-              onClick={() => {
-                setShowForm(false);
-                setNewName("");
-              }}
-              className="rounded-lg border border-gray-300 px-4 py-2 dark:border-gray-600"
-            >
-              Cancel
-            </button>
-          </form>
-        )}
+          ) : (
+            <form onSubmit={handleCreate} className="flex gap-2">
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder="Deck name"
+                className="rounded-lg border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                autoFocus
+              />
+              <button
+                type="submit"
+                className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+              >
+                Create
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowForm(false);
+                  setNewName("");
+                }}
+                className="rounded-lg border border-gray-300 px-4 py-2 dark:border-gray-600"
+              >
+                Cancel
+              </button>
+            </form>
+          )}
+        </div>
       </div>
 
       {decks.length === 0 && !showForm ? (

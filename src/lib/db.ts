@@ -1,11 +1,32 @@
 import Dexie, { type Table } from "dexie";
 import type { Deck, Card, ReviewRecord, Session } from "@/types";
 
+type LegacyCard = Card & { front?: string; back?: string };
+
+export interface SharedDeckLink {
+  id: string;
+  code: string;
+  packageId: string;
+  deckId: string;
+  importedVersion: number;
+  updatedAt: string;
+}
+
+export interface SharedCardLink {
+  id: string;
+  deckId: string;
+  packageCardId: string;
+  localCardId: string;
+  updatedAt: string;
+}
+
 export class FlashCardDB extends Dexie {
   decks!: Table<Deck>;
   cards!: Table<Card>;
   reviewRecords!: Table<ReviewRecord>;
   sessions!: Table<Session>;
+  sharedDeckLinks!: Table<SharedDeckLink>;
+  sharedCardLinks!: Table<SharedCardLink>;
 
   constructor() {
     super("FlashCardDB");
@@ -24,18 +45,19 @@ export class FlashCardDB extends Dexie {
         const cards = await tx.table<Card>("cards").toArray();
         await Promise.all(
           cards.map(async (card) => {
+            const legacyCard = card as LegacyCard;
             // 检查是否是旧格式（有 front/back 但没有 type/data）
             if (
-              ("front" in card && card.front !== undefined) ||
-              ("back" in card && card.back !== undefined)
+              ("front" in legacyCard && legacyCard.front !== undefined) ||
+              ("back" in legacyCard && legacyCard.back !== undefined)
             ) {
               if (!("type" in card) || !card.type) {
                 // 迁移旧卡片为句子类型
                 await tx.table<Card>("cards").update(card.id, {
                   type: "sentence",
                   data: {
-                    sentence: (card as any).front || "",
-                    translation: (card as any).back || "",
+                    sentence: legacyCard.front || "",
+                    translation: legacyCard.back || "",
                   },
                 } as Partial<Card>);
               }
@@ -68,7 +90,7 @@ export class FlashCardDB extends Dexie {
         cards: "id, deckId, due, createdAt, updatedAt",
         reviewRecords: "id, cardId, reviewedAt, [cardId+reviewedAt]",
       })
-      .upgrade(async (tx) => {
+      .upgrade(async () => {
         // Add language field support (no migration needed, field is optional)
       });
     this.version(5)
@@ -78,7 +100,7 @@ export class FlashCardDB extends Dexie {
         reviewRecords: "id, cardId, reviewedAt, [cardId+reviewedAt]",
         sessions: "id, deckId, createdAt, [deckId+createdAt]",
       })
-      .upgrade(async (tx) => {
+      .upgrade(async () => {
         // Add sessions table (no migration needed for existing data)
       });
     this.version(6)
@@ -100,6 +122,18 @@ export class FlashCardDB extends Dexie {
       })
       .upgrade(async () => {
         // Add optional durationSeconds on Session (no migration needed)
+      });
+    this.version(8)
+      .stores({
+        decks: "id, createdAt, updatedAt",
+        cards: "id, deckId, due, createdAt, updatedAt",
+        reviewRecords: "id, cardId, reviewedAt, [cardId+reviewedAt]",
+        sessions: "id, deckId, createdAt, [deckId+createdAt]",
+        sharedDeckLinks: "id, code, packageId, deckId, [packageId+deckId]",
+        sharedCardLinks: "id, deckId, packageCardId, localCardId, [deckId+packageCardId]",
+      })
+      .upgrade(async () => {
+        // Add local shared deck import mapping tables
       });
   }
 }

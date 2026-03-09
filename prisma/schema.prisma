@@ -16,6 +16,8 @@ model User {
 
   accounts      Account[]
   sessions      Session[]
+  sharedDeckPackages SharedDeckPackage[]
+  sharedDeckImports  SharedDeckImport[]
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -68,5 +70,54 @@ model EmailOtp {
 
   @@index([email, createdAt(sort: Desc)])
   @@index([email, expiresAt])
+}
+
+model SharedDeckPackage {
+  id          String           @id @default(cuid())
+  userId      String
+  code        String           @unique
+  name        String
+  language    String?
+  version     Int              @default(1)
+  publishedAt DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cards       SharedDeckCard[]
+  imports     SharedDeckImport[]
+
+  @@index([userId, updatedAt(sort: Desc)])
+}
+
+model SharedDeckCard {
+  id            String            @id @default(cuid())
+  packageId     String
+  clientCardId  String
+  position      Int
+  type          String
+  data          Json
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  package       SharedDeckPackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
+
+  @@unique([packageId, clientCardId])
+  @@index([packageId, position])
+}
+
+model SharedDeckImport {
+  id              String            @id @default(cuid())
+  userId          String
+  packageId       String
+  importedVersion Int
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  package         SharedDeckPackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, packageId])
+  @@index([packageId, importedVersion])
 }
 
