@@ -20,7 +20,7 @@ export async function middlewareAuth(req: NextRequest) {
   });
 
   if (!token) {
-    const loginUrl = new URL("/login", req.url);
+    const loginUrl = new URL("/sign-in", req.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
