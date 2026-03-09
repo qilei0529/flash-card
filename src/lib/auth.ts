@@ -13,18 +13,10 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID ?? "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
-      profile(profile) {
-        return {
-          id: profile.sub,
-          name: profile.name || profile.given_name || profile.family_name,
-          email: profile.email,
-          image: profile.picture,
-        };
-      },
     }),
   ],
   pages: {
-    signIn: "/login",
+    signIn: "/sign-in",
   },
   callbacks: {
     async jwt({ token, user }) {
