@@ -46,7 +46,12 @@ import {
   DeckWordCardRow,
   DeckSentenceCardRow,
 } from "@/components/deck/DeckCardRows";
-import { cardsToCSV, cardsToCSVWithProgress, downloadCSV } from "@/lib/export/csv";
+import {
+  cardsToCSV,
+  cardsToCSVWithProgress,
+  cardsToWordWithFSRSCSV,
+  downloadCSV,
+} from "@/lib/export/csv";
 export default function DeckPage() {
   const params = useParams();
   const router = useRouter();
@@ -328,6 +333,18 @@ export default function DeckPage() {
 
     const csvContent = cardsToCSVWithProgress(cards);
     const filename = `${deck?.name || "deck"}-progress-${new Date().toISOString().split("T")[0]}.csv`;
+    downloadCSV(csvContent, filename);
+  }
+
+  function handleExportLearningCSV() {
+    const wordCards = cards.filter((card) => isWordCard(card));
+    if (wordCards.length === 0) {
+      alert("没有单词卡片可导出");
+      return;
+    }
+
+    const csvContent = cardsToWordWithFSRSCSV(wordCards);
+    const filename = `${deck?.name || "deck"}-word-fsrs-${new Date().toISOString().split("T")[0]}.csv`;
     downloadCSV(csvContent, filename);
   }
 
@@ -691,7 +708,7 @@ export default function DeckPage() {
                     <FileDown className="h-4 w-4" />
                     导出 CSV
                   </button>
-                  <button
+                  {/* <button
                     type="button"
                     onClick={() => {
                       setActionsOpen(false);
@@ -701,6 +718,17 @@ export default function DeckPage() {
                   >
                     <FileDown className="h-4 w-4" />
                     导出 CSV (含学习)
+                  </button> */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActionsOpen(false);
+                      handleExportLearningCSV();
+                    }}
+                    className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    <FileDown className="h-4 w-4" />
+                    精简 CSV (单词+FSRS)
                   </button>
                   <button
                     type="button"

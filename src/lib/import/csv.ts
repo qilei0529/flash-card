@@ -44,7 +44,6 @@ function parseProgressFromRow(row: string[], indices: Record<string, number>): P
     return i !== undefined && i < row.length ? (row[i] ?? "").trim() : "";
   };
   const due = get("due");
-  if (!due) return undefined;
 
   const parseNum = (key: string) => {
     const s = get(key);
@@ -59,25 +58,41 @@ function parseProgressFromRow(row: string[], indices: Record<string, number>): P
     return Number.isFinite(n) ? n : undefined;
   };
 
-  const progress: ParsedCardProgress = { due };
   const stability = parseNum("stability");
-  if (stability !== undefined) progress.stability = stability;
   const difficulty = parseNum("difficulty");
-  if (difficulty !== undefined) progress.difficulty = difficulty;
   const elapsedDays = parseIntVal("elapseddays");
-  if (elapsedDays !== undefined) progress.elapsedDays = elapsedDays;
   const scheduledDays = parseIntVal("scheduleddays");
-  if (scheduledDays !== undefined) progress.scheduledDays = scheduledDays;
   const learningSteps = parseIntVal("learningsteps");
-  if (learningSteps !== undefined) progress.learningSteps = learningSteps;
   const reps = parseIntVal("reps");
-  if (reps !== undefined) progress.reps = reps;
   const lapses = parseIntVal("lapses");
-  if (lapses !== undefined) progress.lapses = lapses;
   const state = parseIntVal("state");
+  const lastReviewRaw = get("lastreview");
+
+  const hasProgress =
+    !!due ||
+    stability !== undefined ||
+    difficulty !== undefined ||
+    elapsedDays !== undefined ||
+    scheduledDays !== undefined ||
+    learningSteps !== undefined ||
+    reps !== undefined ||
+    lapses !== undefined ||
+    state !== undefined ||
+    lastReviewRaw !== "";
+
+  if (!hasProgress) return undefined;
+
+  const progress: ParsedCardProgress = {};
+  if (due) progress.due = due;
+  if (stability !== undefined) progress.stability = stability;
+  if (difficulty !== undefined) progress.difficulty = difficulty;
+  if (elapsedDays !== undefined) progress.elapsedDays = elapsedDays;
+  if (scheduledDays !== undefined) progress.scheduledDays = scheduledDays;
+  if (learningSteps !== undefined) progress.learningSteps = learningSteps;
+  if (reps !== undefined) progress.reps = reps;
+  if (lapses !== undefined) progress.lapses = lapses;
   if (state !== undefined) progress.state = state;
-  const lastReview = get("lastreview");
-  if (lastReview) progress.lastReview = lastReview;
+  if (lastReviewRaw) progress.lastReview = lastReviewRaw;
   else progress.lastReview = null;
 
   return progress;
@@ -88,7 +103,8 @@ function parseProgressFromRow(row: string[], indices: Record<string, number>): P
  * Detects format:
  * - 2 columns → sentence type (sentence, translation)
  * - 3+ columns → word type (word, translation, pronunciation, partOfSpeech, definition, exampleSentence)
- * When header contains FSRS columns (due, stability, etc.), parses progress into ParsedCard.progress
+ * When header contains FSRS columns (`due` plus contiguous `type`, …), parses progress into ParsedCard.progress.
+ * Matches deck exports: full columns + FSRS, or compact `word,type,due,…`. Progress applies even if `due` is empty when other FSRS fields are set (merged with defaults on create).
  */
 export function parseCSV(text: string): ParsedCard[] {
   const lines = text.trim().split(/\r?\n/).filter(Boolean);
@@ -134,6 +150,13 @@ export function parseCSV(text: string): ParsedCard[] {
     }
   }
 
+  /** App export `word,type,due,…` — one content column before FSRS; must not use 2-col sentence path */
+  let isWordCompactFsrs = false;
+  if (hasHeader && fsrsIndices && contentColCount === 1 && rows[0]) {
+    const h0 = (rows[0][0] ?? "").trim().toLowerCase();
+    if (h0 === "word") isWordCompactFsrs = true;
+  }
+
   const cards: ParsedCard[] = [];
   for (let i = start; i < rows.length; i++) {
     const row = rows[i];
@@ -147,7 +170,20 @@ export function parseCSV(text: string): ParsedCard[] {
     let cardType: CardType;
     let data: WordCardData | SentenceCardData;
 
-    if (isSentenceHeader || effectiveColCount <= 2) {
+    if (isWordCompactFsrs) {
+      const word = (row[0] ?? "").trim();
+      if (!word) continue;
+      cardType = "word";
+      data = {
+        word,
+        translation: "",
+        pronunciation: undefined,
+        partOfSpeech: undefined,
+        definition: undefined,
+        exampleSentence: undefined,
+        level: undefined,
+      };
+    } else if (isSentenceHeader || effectiveColCount <= 2) {
       const sentence = (row[0] ?? "").trim();
       const translation = (row[1] ?? "").trim();
       if (!sentence && !translation) continue;

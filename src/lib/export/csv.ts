@@ -166,6 +166,36 @@ export function cardsToCSVWithProgress(cards: Card[]): string {
 }
 
 /**
+ * Convert cards to CSV format: word + FSRS learning progress columns
+ */
+export function cardsToWordWithFSRSCSV(cards: Card[]): string {
+  if (cards.length === 0) return "";
+
+  const lines: string[] = [`word,${FSRS_COLUMNS}`];
+  for (const card of cards) {
+    if (!isWordCard(card)) continue;
+    const data = card.data as WordCardData;
+    const row = [
+      escapeCSVField(data.word || ""),
+      escapeCSVField(card.type),
+      escapeCSVField(card.due || ""),
+      String(card.stability ?? ""),
+      String(card.difficulty ?? ""),
+      String(card.elapsedDays ?? ""),
+      String(card.scheduledDays ?? ""),
+      String(card.learningSteps ?? ""),
+      String(card.reps ?? ""),
+      String(card.lapses ?? ""),
+      String(card.state ?? ""),
+      escapeCSVField(card.lastReview || ""),
+    ];
+    lines.push(row.join(","));
+  }
+
+  return lines.join("\n");
+}
+
+/**
  * Download CSV file
  */
 export function downloadCSV(content: string, filename: string): void {

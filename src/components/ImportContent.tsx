@@ -152,7 +152,7 @@ export function ImportContent() {
     const cards = parseImportText(text);
     if (cards.length === 0) {
       setError(
-        "No valid cards found. Use comma or tab separator. 2 columns = sentence type, 3+ columns = word type."
+        "No valid cards found. Use comma or tab separator. 2 columns = sentence; 3+ = word. Deck exports with FSRS columns are supported."
       );
       return;
     }
@@ -230,7 +230,7 @@ export function ImportContent() {
         <p className="mb-6 text-gray-500 dark:text-gray-400">
           {format === "words-only"
             ? "Paste words separated by comma, tab, or newline. Cards will be enriched with translation, pronunciation, and more via AI."
-            : "Paste full CSV or Anki plain text. 2 columns = sentence type, 3+ columns = word type. Word CSV can optionally include a trailing CEFR level column (A1–C2)."}
+            : "Paste full CSV or Anki plain text. Content: 2 columns = sentence; 3+ columns = word (optional CEFR level in the last content column). Files exported from a deck (导出 CSV, 导出 CSV (含学习), or 精简 CSV (单词+FSRS)) re-import here: FSRS columns restore learning progress when present. Matching rows update existing cards by word or sentence."}
         </p>
 
         {(imported !== null || enriching) && (
@@ -343,7 +343,7 @@ export function ImportContent() {
               placeholder={
                 format === "words-only"
                   ? "apple, banana, orange\n\nor:\napple\nbanana\norange"
-                  : "2 columns: sentence, translation\n3+ columns: word, translation, pronunciation, partOfSpeech, definition, exampleSentence, level (optional)"
+                  : "Content only:\n2 columns: sentence, translation\n3+ columns: word, translation, …, level (optional)\n\nWith FSRS (from deck export):\nword,translation,…,level,type,due,stability,…\nor compact: word,type,due,stability,…"
               }
               rows={12}
               className="w-full rounded-lg border border-gray-300 px-4 py-3 font-mono text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
